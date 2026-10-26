@@ -1,86 +1,110 @@
-<div align="center">
+# Yomi
 
-<a href="https://mihon.app">
-    <img src="./.github/assets/logo.png" alt="Mihon logo" title="Mihon logo" width="80"/>
-</a>
+### Modern manga reader for Android
 
-# Mihon [App](#)
+Yomi is a fast, polished manga, manhwa, manhua, and webtoon reader for Android.
+It is based on [Mihon](https://github.com/mihonapp/mihon) and preserves its reading engine,
+source/extension system, library management, downloads, and backup compatibility.
 
-### Full-featured reader
-Discover and read manga, webtoons, comics, and more – easier than ever on your Android device.
-
-[![Discord server](https://img.shields.io/discord/1195734228319617024.svg?label=&labelColor=6A7EC2&color=7389D8&logo=discord&logoColor=FFFFFF)](https://discord.gg/mihon)
-[![GitHub downloads](https://img.shields.io/github/downloads/mihonapp/mihon/total?label=downloads&labelColor=27303D&color=0D1117&logo=github&logoColor=FFFFFF&style=flat)](https://mihon.app/download)
-
-[![CI](https://img.shields.io/github/actions/workflow/status/mihonapp/mihon/build.yml?labelColor=27303D)](https://github.com/mihonapp/mihon/actions/workflows/build_push.yml)
-[![License: Apache-2.0](https://img.shields.io/github/license/mihonapp/mihon?labelColor=27303D&color=0877d2)](/LICENSE)
-[![Translation status](https://img.shields.io/weblate/progress/mihon?labelColor=27303D&color=946300)](https://hosted.weblate.org/engage/mihon/)
-
-## Download
-
-[![Mihon Stable](https://img.shields.io/github/release/mihonapp/mihon.svg?maxAge=3600&label=Stable&labelColor=06599d&color=043b69)](https://mihon.app/download)
-[![Mihon Beta](https://img.shields.io/github/v/release/mihonapp/mihon-preview.svg?maxAge=3600&label=Beta&labelColor=2c2c47&color=1c1c39)](https://mihon.app/download)
-
-*Requires Android 8.0 or higher.*
+Yomi uses a distinct application ID (`app.yomi.reader`) and can be installed alongside Mihon
+without overwriting it.
 
 ## Features
 
-<div align="left">
+- Library with categories, unread badges, download indicators, filters, sorting, and grid/list layouts
+- Continue reading row on the library screen
+- Source browsing, search, filters, and global search through compatible extensions
+- Manga detail pages with covers, metadata, chapter lists, and download actions
+- Configurable reader: paged (LTR/RTL) and webtoon/vertical modes, scaling, preloading,
+  brightness, orientation, and reading position saving
+- Chapter downloads and offline reading with a download queue, retry, and cancel
+- Tracker support: MyAnimeList, AniList, Kitsu, MangaUpdates, Shikimori, Bangumi, MangaBaka, and Hikka
+- Backup create/restore, including **Import Mihon backup** (`.tachibk`) and legacy Tachiyomi
+  `.proto.gz` backups with preview, progress preservation, and missing-source handling
+- Dark-first Yomi theme with deep charcoal surfaces and subtle purple accents
 
-* Local reading of content.
-* A configurable reader with multiple viewers, reading directions and other settings.
-* Tracker support: [MangaBaka](https://mangabaka.org), [MyAnimeList](https://myanimelist.net/), [AniList](https://anilist.co/), [Kitsu](https://kitsu.app/), [MangaUpdates](https://mangaupdates.com), [Shikimori](https://shikimori.one), [Bangumi](https://bgm.tv/), and [Hikka](https://hikka.io/) support.
-* Categories to organize your library.
-* Light and dark themes.
-* Schedule updating your library for new chapters.
-* Create backups locally to read offline or to your desired cloud service.
-* Plus much more...
+## Backup import (migrating from Mihon or Tachiyomi)
 
-</div>
+Settings → Backup & Restore → **Import Mihon backup**
 
-## Contributing
+1. Pick a backup file (`.tachibk` or legacy `.proto.gz`).
+2. Yomi validates the file and identifies the format. The original file is never modified.
+3. A preview shows what the backup contains: manga entries, categories, chapters, read status,
+   saved reading progress, history, and tracker links.
+4. Choose what to restore and confirm. Restoration progress and a summary of imported/failed
+   items are shown in the notification.
+5. After importing, Yomi resumes at the last chapter and page you were reading where that
+   information exists. Entries whose source is missing are preserved with their reading history
+   and can be migrated manually — they are never silently deleted.
 
-[Code of conduct](./CODE_OF_CONDUCT.md) · [Contributing guide](./CONTRIBUTING.md)
+Downloaded chapter image files are not contained in backup archives and must be migrated
+separately.
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+## Development requirements
 
-Before reporting a new issue, take a look at the [FAQ](https://mihon.app/docs/faq/general), the [changelog](https://mihon.app/changelogs/) and the already opened [issues](https://github.com/mihonapp/mihon/issues); if you got any questions, join our [Discord server](https://discord.gg/mihon).
+- JDK 21+ (Android Studio's bundled JBR works)
+- Android SDK with platform `android-37.2`, build-tools `37.0.0`, NDK `29.0.14206865`
+  (Gradle will offer to install missing packages, or install via `sdkmanager`)
+- Gradle 9.8.2 via the included wrapper
 
+## Building
 
-### Repositories
+```bash
+# Debug APK (applicationId app.yomi.reader.dev)
+./gradlew :app:assembleDebug
 
-[![mihonapp/website - GitHub](https://github-stats-extended.vercel.app/api/pin/?username=mihonapp&repo=website&bg_color=161B22&text_color=c9d1d9&title_color=0877d2&icon_color=0877d2&border_radius=8&hide_border=true&description_lines_count=2)](https://github.com/mihonapp/website/)
-[![mihonapp/bitmap.kt - GitHub](https://github-stats-extended.vercel.app/api/pin/?username=mihonapp&repo=bitmap.kt&bg_color=161B22&text_color=c9d1d9&title_color=0877d2&icon_color=0877d2&border_radius=8&hide_border=true&description_lines_count=2)](https://github.com/mihonapp/bitmap.kt/)
+# Unit tests
+./gradlew test
 
-### Credits
+# Release APK (signed with your own keystore via keystore.properties, or debug key)
+./gradlew :app:assembleRelease
+```
 
-Thank you to all the people who have contributed!
+APKs are written to `app/build/outputs/apk/<buildType>/`.
 
-<a href="https://github.com/mihonapp/mihon/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=mihonapp/mihon" alt="Mihon app contributors" title="Mihon app contributors" width="800"/>
-</a>
+## Installing
 
-### Disclaimer
+1. Build a debug or release APK (see above), or download a release artifact.
+2. Transfer the APK to your device and allow installation from unknown sources when prompted.
+3. Yomi installs as a separate app (`app.yomi.reader`) and does not replace Mihon.
 
-The developer(s) of this application does not have any affiliation with the content providers available, and this application hosts zero content.
+## Upstream project and attribution
 
-### License
+Yomi is a fork of **Mihon** (<https://github.com/mihonapp/mihon>), which itself continues the
+work of Tachiyomi. Yomi keeps the upstream copyright notices, license texts, and credits.
+All credit for the core reader, library, download, extension, and backup systems belongs to the
+Mihon and Tachiyomi authors and contributors. Please consider supporting the upstream project.
 
-<pre>
-Copyright © 2015 Javier Tomás
-Copyright © 2024 Mihon Open Source Project
+Upstream integration is maintained through an `upstream` git remote; Yomi-specific work lives on
+`develop/yomi-initial`.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+## License
 
-http://www.apache.org/licenses/LICENSE-2.0
+    Copyright 2015 Javier Tomás
+    Copyright 2024 Mihon contributors
+    Copyright 2026 Yomi contributors
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-</pre>
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-</div>
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+See [LICENSE](/LICENSE) for the full license text.
+
+## Known limitations
+
+- Legacy Tachiyomi **JSON** backups are not supported (protobuf `.proto.gz` is supported).
+- Tracker OAuth flows reuse the upstream `mihon://` and `app.mihon` redirect schemes for
+  compatibility with registered OAuth applications; if Mihon and Yomi are both installed and
+  signed in to trackers, Android may ask which app handles the redirect.
+- Downloaded chapters are not included in backup archives; migrate them manually.
+- The built-in updater is disabled in local builds; update Yomi manually or via your own
+  release channel.
+- Yomi ships without crash telemetry by default in local builds.

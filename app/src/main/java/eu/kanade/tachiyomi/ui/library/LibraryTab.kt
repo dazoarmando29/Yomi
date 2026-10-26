@@ -186,6 +186,14 @@ data object LibraryTab : Tab {
                         currentPage = state.coercedActiveCategoryIndex,
                         hasActiveFilters = state.hasActiveFilters,
                         showPageTabs = state.showCategoryTabs || !state.searchQuery.isNullOrEmpty(),
+                        continueReadingItems = remember(state) {
+                            state.displayedCategories
+                                .flatMap { state.getItemsForCategory(it) }
+                                .filter { it.libraryManga.hasStarted && it.unreadCount > 0 && it.libraryManga.lastRead != null }
+                                .distinctBy { it.id }
+                                .sortedByDescending { it.libraryManga.lastRead }
+                                .take(10)
+                        },
                         onChangeCurrentPage = viewModel::updateActiveCategoryIndex,
                         onClickManga = { navigator.push(MangaScreen(it)) },
                         onContinueReadingClicked = { it: LibraryManga ->

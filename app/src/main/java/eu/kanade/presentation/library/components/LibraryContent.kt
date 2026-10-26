@@ -34,6 +34,7 @@ fun LibraryContent(
     currentPage: Int,
     hasActiveFilters: Boolean,
     showPageTabs: Boolean,
+    continueReadingItems: List<LibraryItem> = emptyList(),
     onChangeCurrentPage: (Int) -> Unit,
     onClickManga: (Long) -> Unit,
     onContinueReadingClicked: ((LibraryManga) -> Unit)?,
@@ -57,6 +58,14 @@ fun LibraryContent(
 
         val scope = rememberCoroutineScope()
         var isRefreshing by remember(pagerState.currentPage) { mutableStateOf(false) }
+
+        if (searchQuery.isNullOrEmpty() && selection.isEmpty() && continueReadingItems.isNotEmpty()) {
+            ContinueReadingRow(
+                items = continueReadingItems,
+                onClickManga = onClickManga,
+                onContinueReadingClicked = onContinueReadingClicked,
+            )
+        }
 
         if (showPageTabs && categories.isNotEmpty() && (categories.size > 1 || !categories.first().isSystemCategory)) {
             LaunchedEffect(categories) {
