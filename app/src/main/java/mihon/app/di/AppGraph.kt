@@ -33,6 +33,8 @@ import eu.kanade.tachiyomi.extension.util.ExtensionInstallActivity
 import eu.kanade.tachiyomi.network.JavaScriptEngine
 import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.network.NetworkPreferences
+import eu.kanade.tachiyomi.smartsource.SourceHealthWorker
+import eu.kanade.tachiyomi.smartsource.SmartSourcePreferences
 import eu.kanade.tachiyomi.ui.base.delegate.SecureActivityDelegateImpl
 import eu.kanade.tachiyomi.ui.main.MainActivity
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
@@ -73,6 +75,7 @@ interface AppGraph : ViewModelGraph {
     fun inject(backupCreateWorker: BackupCreateWorker)
     fun inject(delayedTrackingUpdateWorker: DelayedTrackingUpdateWorker)
     fun inject(downloadWorker: DownloadWorker)
+    fun inject(sourceHealthWorker: SourceHealthWorker)
     fun inject(notificationReceiver: NotificationReceiver)
     fun inject(notificationReceiver: SecureActivityDelegateImpl)
     fun inject(extensionInstallActivity: ExtensionInstallActivity)
@@ -87,6 +90,7 @@ interface AppGraph : ViewModelGraph {
     val networkPreferences: NetworkPreferences
     val libraryPreferences: LibraryPreferences
     val sourcePreferences: SourcePreferences
+    val smartSourcePreferences: SmartSourcePreferences
     val trackPreferences: TrackPreferences
     val backupPreferences: BackupPreferences
     val storagePreferences: StoragePreferences

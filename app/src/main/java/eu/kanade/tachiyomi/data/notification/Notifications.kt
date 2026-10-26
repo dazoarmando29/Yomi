@@ -73,6 +73,12 @@ object Notifications {
     const val ID_UPDATES_TO_EXTS = -401
     const val ID_EXTENSION_INSTALLER = -402
 
+    /**
+     * Notification channel and id used by the Smart Source Manager.
+     */
+    const val CHANNEL_SMART_SOURCE = "smart_source_channel"
+    const val ID_SMART_SOURCE_REPORT = -501
+
     private val deprecatedChannels = listOf(
         "downloader_channel",
         "downloader_complete_channel",
@@ -160,6 +166,9 @@ object Notifications {
                 buildNotificationChannel(CHANNEL_EXTENSIONS_UPDATE, IMPORTANCE_DEFAULT) {
                     setGroup(GROUP_APK_UPDATES)
                     setName(context.stringResource(MR.strings.channel_ext_updates))
+                },
+                buildNotificationChannel(CHANNEL_SMART_SOURCE, IMPORTANCE_DEFAULT) {
+                    setName(context.stringResource(MR.strings.yomi_smart_source_channel))
                 },
             ),
         )

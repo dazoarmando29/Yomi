@@ -214,6 +214,12 @@ object SettingsMainScreen : Screen() {
             screen = SettingsDataScreen,
         ),
         Item(
+            titleRes = MR.strings.yomi_smart_source_manager,
+            subtitleRes = MR.strings.yomi_smart_source_manager_summary,
+            icon = MaterialSymbols.Rounded.Sync,
+            screen = SettingsSmartSourceScreen,
+        ),
+        Item(
             titleRes = MR.strings.pref_category_security,
             subtitleRes = MR.strings.pref_security_summary,
             icon = MaterialSymbols.Rounded.Security,
