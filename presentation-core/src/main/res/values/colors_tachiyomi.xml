@@ -1,20 +1,20 @@
 <!--
-  ~ Yomi default theme (light)
-  ~ Deep charcoal neutrals with subtle purple accents
+  ~ Yomi premium design tokens (light)
+  ~ Purple accent on soft neutral surfaces
 -->
 <resources>
     <color name="tachiyomi_primary">#6750A4</color>
     <color name="tachiyomi_onPrimary">#FFFFFF</color>
     <color name="tachiyomi_primaryContainer">#EADDFF</color>
     <color name="tachiyomi_onPrimaryContainer">#21005D</color>
-    <color name="tachiyomi_inversePrimary">#D0BCFF</color>
+    <color name="tachiyomi_inversePrimary">#AD91F5</color>
     <color name="tachiyomi_secondary">#6750A4</color>
     <color name="tachiyomi_onSecondary">#FFFFFF</color>
     <color name="tachiyomi_secondaryContainer">#E9DDFF</color>
     <color name="tachiyomi_onSecondaryContainer">#24005A</color>
-    <color name="tachiyomi_tertiary">#3F6E4F</color>
+    <color name="tachiyomi_tertiary">#2E7D5B</color>
     <color name="tachiyomi_onTertiary">#FFFFFF</color>
-    <color name="tachiyomi_tertiaryContainer">#C0F0CE</color>
+    <color name="tachiyomi_tertiaryContainer">#B8F0D4</color>
     <color name="tachiyomi_onTertiaryContainer">#00210D</color>
     <color name="tachiyomi_background">#F9F7FC</color>
     <color name="tachiyomi_onBackground">#1C1B20</color>

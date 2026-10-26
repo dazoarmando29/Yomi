@@ -1,39 +1,40 @@
 <!--
-  ~ Yomi default theme (dark)
-  ~ Deep charcoal backgrounds with subtle purple accents
+  ~ Yomi premium design tokens (dark, default)
+  ~ Background #101119, Elevated #191B26, Card #222432
+  ~ Primary #AD91F5, Secondary #D5C7FF, Success #77D5AE, Error #F07583
 -->
 <resources>
-    <color name="tachiyomi_primary">#CBB7FF</color>
-    <color name="tachiyomi_onPrimary">#3B2080</color>
-    <color name="tachiyomi_primaryContainer">#523FA8</color>
+    <color name="tachiyomi_primary">#AD91F5</color>
+    <color name="tachiyomi_onPrimary">#241255</color>
+    <color name="tachiyomi_primaryContainer">#3B2D6B</color>
     <color name="tachiyomi_onPrimaryContainer">#EADDFF</color>
     <color name="tachiyomi_inversePrimary">#6750A4</color>
-    <color name="tachiyomi_secondary">#CBB7FF</color>
-    <color name="tachiyomi_onSecondary">#3B2080</color>
-    <color name="tachiyomi_secondaryContainer">#4A3D8B</color>
+    <color name="tachiyomi_secondary">#D5C7FF</color>
+    <color name="tachiyomi_onSecondary">#33275C</color>
+    <color name="tachiyomi_secondaryContainer">#453B6B</color>
     <color name="tachiyomi_onSecondaryContainer">#E9DDFF</color>
-    <color name="tachiyomi_tertiary">#86D9A6</color>
-    <color name="tachiyomi_onTertiary">#00391C</color>
-    <color name="tachiyomi_tertiaryContainer">#00522B</color>
-    <color name="tachiyomi_onTertiaryContainer">#A7F2C1</color>
-    <color name="tachiyomi_background">#16151A</color>
-    <color name="tachiyomi_onBackground">#E7E1E9</color>
-    <color name="tachiyomi_surface">#16151A</color>
-    <color name="tachiyomi_onSurface">#E7E1E9</color>
-    <color name="tachiyomi_surfaceVariant">#25222B</color>
-    <color name="tachiyomi_onSurfaceVariant">#CBC3D4</color>
-    <color name="tachiyomi_surfaceTint">#CBB7FF</color>
+    <color name="tachiyomi_tertiary">#77D5AE</color>
+    <color name="tachiyomi_onTertiary">#003825</color>
+    <color name="tachiyomi_tertiaryContainer">#005238</color>
+    <color name="tachiyomi_onTertiaryContainer">#9FF2CE</color>
+    <color name="tachiyomi_background">#101119</color>
+    <color name="tachiyomi_onBackground">#F5F4FA</color>
+    <color name="tachiyomi_surface">#101119</color>
+    <color name="tachiyomi_onSurface">#F5F4FA</color>
+    <color name="tachiyomi_surfaceVariant">#222432</color>
+    <color name="tachiyomi_onSurfaceVariant">#AEACBC</color>
+    <color name="tachiyomi_surfaceTint">#AD91F5</color>
     <color name="tachiyomi_inverseSurface">#E7E1E9</color>
     <color name="tachiyomi_inverseOnSurface">#2E2B33</color>
-    <color name="tachiyomi_error">#FFB4AB</color>
-    <color name="tachiyomi_onError">#690005</color>
-    <color name="tachiyomi_errorContainer">#93000A</color>
-    <color name="tachiyomi_onErrorContainer">#FFDAD6</color>
-    <color name="tachiyomi_outline">#958FA3</color>
-    <color name="tachiyomi_outlineVariant">#494452</color>
-    <color name="tachiyomi_surfaceContainerLowest">#121116</color>
-    <color name="tachiyomi_surfaceContainerLow">#1C1A21</color>
-    <color name="tachiyomi_surfaceContainer">#211F27</color>
-    <color name="tachiyomi_surfaceContainerHigh">#2B2832</color>
-    <color name="tachiyomi_surfaceContainerHighest">#36323D</color>
+    <color name="tachiyomi_error">#F07583</color>
+    <color name="tachiyomi_onError">#4A0009</color>
+    <color name="tachiyomi_errorContainer">#7A2430</color>
+    <color name="tachiyomi_onErrorContainer">#FFDAD9</color>
+    <color name="tachiyomi_outline">#9793A6</color>
+    <color name="tachiyomi_outlineVariant">#4A4757</color>
+    <color name="tachiyomi_surfaceContainerLowest">#101119</color>
+    <color name="tachiyomi_surfaceContainerLow">#191B26</color>
+    <color name="tachiyomi_surfaceContainer">#222432</color>
+    <color name="tachiyomi_surfaceContainerHigh">#2A2C3D</color>
+    <color name="tachiyomi_surfaceContainerHighest">#33354A</color>
 </resources>
