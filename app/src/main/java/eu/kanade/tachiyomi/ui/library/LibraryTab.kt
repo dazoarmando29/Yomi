@@ -139,6 +139,7 @@ data object LibraryTab : Tab {
                     viewModel.toggleSelection(category, manga)
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 },
+                onTogglePin = { viewModel.togglePin(manga.id) },
                 onDismiss = { contextMenuSelection = null },
             )
         }

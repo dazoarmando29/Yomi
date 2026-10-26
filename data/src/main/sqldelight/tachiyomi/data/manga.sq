@@ -27,6 +27,7 @@ CREATE TABLE manga(
     state_chapter_fetch_interval INTEGER NOT NULL,
     state_cover_last_modified INTEGER AS Instant,
     state_initialized INTEGER AS Boolean NOT NULL,
+    state_pinned INTEGER AS Boolean NOT NULL DEFAULT 0,
     UNIQUE(source_id, remote_url)
 );
 
@@ -306,3 +307,11 @@ insertNetworkManga {
     WHERE source_id = :sourceId
     AND remote_url = :remoteUrl;
 }
+
+setPinned:
+UPDATE manga
+SET state_pinned = :pinned
+WHERE id = :id;
+
+getPinnedIds:
+SELECT id FROM manga WHERE state_pinned = 1;

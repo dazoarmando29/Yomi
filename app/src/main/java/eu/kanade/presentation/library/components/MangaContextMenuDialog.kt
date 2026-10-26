@@ -24,6 +24,7 @@ fun MangaContextMenuDialog(
     onViewDetails: () -> Unit,
     onFindAlternatives: () -> Unit,
     onSelect: () -> Unit,
+    onTogglePin: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     AlertDialog(
@@ -50,6 +51,9 @@ fun MangaContextMenuDialog(
                 }
                 TextButton(onClick = { onDismiss(); onFindAlternatives() }) {
                     Text(stringResource(MR.strings.yomi_menu_find_alternatives))
+                }
+                TextButton(onClick = { onDismiss(); onTogglePin() }) {
+                    Text(stringResource(MR.strings.yomi_menu_pin))
                 }
                 TextButton(onClick = { onDismiss(); onSelect() }) {
                     Text(stringResource(MR.strings.yomi_menu_select))

@@ -52,6 +52,8 @@ interface MangaRepository {
     suspend fun update(update: MangaUpdate): Boolean
 
     suspend fun updateRemote(update: MangaRemoteUpdate): Boolean
+    suspend fun setPinned(id: Long, pinned: Boolean)
+    suspend fun getPinnedIds(): Set<Long>
 
     suspend fun updateAll(mangaUpdates: List<MangaUpdate>): Boolean
 

@@ -658,6 +658,7 @@
     <string name="yomi_menu_continue_reading">Continue reading</string>
     <string name="yomi_menu_view_details">View details</string>
     <string name="yomi_menu_find_alternatives">Find alternative sources</string>
+    <string name="yomi_menu_pin">Pin to top of library</string>
     <string name="yomi_menu_select">Select for bulk actions</string>
     <string name="yomi_recent_searches">Recent searches</string>
     <string name="yomi_shortcut_downloads">Downloads</string>
