@@ -19,6 +19,9 @@ import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.UpdateChapter
 import tachiyomi.domain.chapter.model.ChapterUpdate
+import tachiyomi.domain.history.interactor.GetHistory
+import tachiyomi.domain.history.interactor.UpsertHistory
+import tachiyomi.domain.history.model.HistoryUpdate
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaUpdate
 import tachiyomi.domain.source.service.SourceManager
@@ -40,6 +43,8 @@ class MigrateMangaUseCase(
     private val setMangaCategories: SetMangaCategories,
     private val getTracks: GetTracks,
     private val upsertTrack: UpsertTrack,
+    private val getHistory: GetHistory,
+    private val upsertHistory: UpsertHistory,
     private val coverCache: CoverCache,
     private val updateMangaFromRemote: UpdateMangaFromRemote,
 ) {
@@ -72,6 +77,9 @@ class MigrateMangaUseCase(
                             if (prevChapter != null) {
                                 dateFetch = prevChapter.dateFetch
                                 bookmark = prevChapter.bookmark
+                                if (!prevChapter.read && prevChapter.lastPageRead > 0) {
+                                    lastPageRead = prevChapter.lastPageRead
+                                }
                             }
 
                             if (maxChapterRead != null && mangaChapter.chapterNumber <= maxChapterRead) {
@@ -80,6 +88,23 @@ class MigrateMangaUseCase(
                         }
                     }
                 updateChapter.awaitAll(chapterUpdates)
+
+                // Preserve reading history by mapping chapters through their recognized numbers
+                val prevChaptersById = prevMangaChapters.associateBy { it.id }
+                val historyUpdates = getHistory.await(current.id).mapNotNull { history ->
+                    val prevChapter = prevChaptersById[history.chapterId] ?: return@mapNotNull null
+                    val readAt = history.readAt ?: return@mapNotNull null
+                    val targetChapter = mangaChapters.find {
+                        it.isRecognizedNumber && prevChapter.isRecognizedNumber &&
+                            it.chapterNumber == prevChapter.chapterNumber
+                    } ?: return@mapNotNull null
+                    HistoryUpdate(
+                        chapterId = targetChapter.id,
+                        readAt = readAt,
+                        sessionReadDuration = history.readDuration.coerceAtLeast(0L),
+                    )
+                }
+                historyUpdates.forEach { upsertHistory.await(it) }
             }
 
             // Update categories
