@@ -331,6 +331,8 @@ dependencies {
     implementation(libs.leakCanary.plumber)
 
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.sqldelight.runtime)
+    testImplementation(libs.sqldelight.sqliteDriver)
 }
 
 apollo {
