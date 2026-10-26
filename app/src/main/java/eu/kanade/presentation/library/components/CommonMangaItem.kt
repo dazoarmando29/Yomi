@@ -18,6 +18,7 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
@@ -77,6 +78,7 @@ fun MangaCompactGridItem(
     title: String? = null,
     onClickContinueReading: (() -> Unit)? = null,
     coverAlpha: Float = 1f,
+    readingProgress: Float? = null,
     coverBadgeStart: @Composable (RowScope.() -> Unit)? = null,
     coverBadgeEnd: @Composable (RowScope.() -> Unit)? = null,
 ) {
@@ -94,6 +96,7 @@ fun MangaCompactGridItem(
                     data = coverData,
                 )
             },
+            readingProgress = readingProgress,
             badgesStart = coverBadgeStart,
             badgesEnd = coverBadgeEnd,
             content = {
@@ -182,6 +185,7 @@ fun MangaComfortableGridItem(
     isSelected: Boolean = false,
     titleMaxLines: Int = 2,
     coverAlpha: Float = 1f,
+    readingProgress: Float? = null,
     coverBadgeStart: (@Composable RowScope.() -> Unit)? = null,
     coverBadgeEnd: (@Composable RowScope.() -> Unit)? = null,
     onClickContinueReading: (() -> Unit)? = null,
@@ -201,6 +205,7 @@ fun MangaComfortableGridItem(
                         data = coverData,
                     )
                 },
+                readingProgress = readingProgress,
                 badgesStart = coverBadgeStart,
                 badgesEnd = coverBadgeEnd,
                 content = {
@@ -234,6 +239,7 @@ fun MangaComfortableGridItem(
 private fun MangaGridCover(
     modifier: Modifier = Modifier,
     cover: @Composable BoxScope.() -> Unit = {},
+    readingProgress: Float? = null,
     badgesStart: (@Composable RowScope.() -> Unit)? = null,
     badgesEnd: (@Composable RowScope.() -> Unit)? = null,
     content: @Composable (BoxScope.() -> Unit)? = null,
@@ -245,6 +251,18 @@ private fun MangaGridCover(
     ) {
         cover()
         content?.invoke(this)
+        if (readingProgress != null && readingProgress in 0f..1f) {
+            LinearProgressIndicator(
+                progress = { readingProgress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(3.dp)
+                    .align(Alignment.BottomCenter),
+                trackColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.primary,
+                drawStopIndicator = {},
+            )
+        }
         if (badgesStart != null) {
             BadgeGroup(
                 modifier = Modifier

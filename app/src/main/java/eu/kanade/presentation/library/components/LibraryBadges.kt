@@ -28,6 +28,15 @@ internal fun UnreadBadge(count: Long) {
 }
 
 @Composable
+internal fun RecentBadge() {
+    Badge(
+        text = "NEW",
+        color = MaterialTheme.colorScheme.primaryContainer,
+        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    )
+}
+
+@Composable
 internal fun LanguageBadge(
     isLocal: Boolean,
     sourceLanguage: String,
