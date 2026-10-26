@@ -19,3 +19,4 @@ local.properties
 # Local build logs
 build.log
 build.pid
+test.log
