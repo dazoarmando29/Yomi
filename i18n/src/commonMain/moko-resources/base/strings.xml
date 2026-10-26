@@ -645,6 +645,15 @@
     <string name="yomi_skip_retry_backoff">Waiting for retry backoff</string>
     <string name="yomi_skip_permanent_failure">Source problem reported to Smart Source Manager</string>
     <string name="yomi_skip_recently_checked">Checked recently</string>
+    <string name="yomi_home_title">Home</string>
+    <string name="yomi_home_customize">Customize</string>
+    <string name="yomi_home_recently_updated">Recently updated</string>
+    <string name="yomi_home_shortcuts">Your library</string>
+    <string name="yomi_home_library_stats">%1$d titles · %2$d unread chapters</string>
+    <string name="yomi_home_open_library">Open library</string>
+    <string name="yomi_home_source_health">Source health</string>
+    <string name="yomi_home_source_health_text">%1$d source(s) need attention.</string>
+    <string name="yomi_home_review">Review</string>
     <string name="pref_backup_interval">Automatic backup frequency</string>
     <string name="action_create">Create</string>
     <string name="backup_created">Backup created</string>

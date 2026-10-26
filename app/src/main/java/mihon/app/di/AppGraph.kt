@@ -93,6 +93,7 @@ interface AppGraph : ViewModelGraph {
     val sourcePreferences: SourcePreferences
     val smartSourcePreferences: SmartSourcePreferences
     val smartUpdatePreferences: SmartUpdatePreferences
+    val homePreferences: eu.kanade.tachiyomi.ui.home.HomePreferences
     val trackPreferences: TrackPreferences
     val backupPreferences: BackupPreferences
     val storagePreferences: StoragePreferences

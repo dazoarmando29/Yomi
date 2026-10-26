@@ -64,6 +64,7 @@ object HomeScreen : Screen() {
     private const val TabNavigatorKey = "HomeTabs"
 
     private val TABS = listOf(
+        HomeDashboardTab,
         LibraryTab,
         UpdatesTab,
         HistoryTab,
@@ -141,6 +142,7 @@ object HomeScreen : Screen() {
                 launch {
                     openTabEvent.receiveAsFlow().collectLatest {
                         tabNavigator.current = when (it) {
+                            Tab.Home -> HomeDashboardTab
                             is Tab.Library -> LibraryTab
                             Tab.Updates -> UpdatesTab
                             Tab.History -> HistoryTab
@@ -267,10 +269,11 @@ object HomeScreen : Screen() {
     }
 
     sealed interface Tab {
+        data object Home : Tab
         data class Library(val mangaIdToOpen: Long? = null) : Tab
         data object Updates : Tab
         data object History : Tab
         data class Browse(val toExtensions: Boolean = false) : Tab
-        data class More(val toDownloads: Boolean) : Tab
+        data class More(val toDownloads: Boolean = false) : Tab
     }
 }
