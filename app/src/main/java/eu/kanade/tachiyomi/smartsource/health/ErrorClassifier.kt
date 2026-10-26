@@ -59,7 +59,11 @@ object ErrorClassifier {
                 reason = "Repository host could not be resolved",
             )
         } else {
-            Classification(HealthStatus.TEMPORARILY_UNAVAILABLE, retryable = true, reason = "Host could not be resolved")
+            Classification(
+                HealthStatus.TEMPORARILY_UNAVAILABLE,
+                retryable = true,
+                reason = "Host could not be resolved",
+            )
         }
         is SocketTimeoutException -> Classification(
             HealthStatus.TEMPORARILY_UNAVAILABLE,
@@ -106,7 +110,11 @@ object ErrorClassifier {
     /**
      * Suggests a backoff in milliseconds for the next attempt, doubling per consecutive failure.
      */
-    fun backoffMillis(consecutiveFailures: Int, baseMillis: Long = 30_000L, maxMillis: Long = 6 * 60 * 60 * 1000L): Long {
+    fun backoffMillis(
+        consecutiveFailures: Int,
+        baseMillis: Long = 30_000L,
+        maxMillis: Long = 6 * 60 * 60 * 1000L,
+    ): Long {
         if (consecutiveFailures <= 0) return baseMillis
         val shift = consecutiveFailures.coerceAtMost(8)
         return (baseMillis shl shift).coerceAtMost(maxMillis)

@@ -13,8 +13,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -33,8 +33,8 @@ import eu.kanade.presentation.library.DeleteLibraryMangaDialog
 import eu.kanade.presentation.library.LibrarySettingsDialog
 import eu.kanade.presentation.library.UpdateStatusScreen
 import eu.kanade.presentation.library.components.LibraryContent
-import eu.kanade.presentation.library.components.MangaContextMenuDialog
 import eu.kanade.presentation.library.components.LibraryToolbar
+import eu.kanade.presentation.library.components.MangaContextMenuDialog
 import eu.kanade.presentation.manga.components.LibraryBottomActionMenu
 import eu.kanade.presentation.more.onboarding.GETTING_STARTED_URL
 import eu.kanade.presentation.util.Tab
@@ -228,7 +228,10 @@ data object LibraryTab : Tab {
                         continueReadingItems = remember(state) {
                             state.displayedCategories
                                 .flatMap { state.getItemsForCategory(it) }
-                                .filter { it.libraryManga.hasStarted && it.unreadCount > 0 && it.libraryManga.lastRead != null }
+                                .filter {
+                                    it.libraryManga.hasStarted && it.unreadCount > 0 &&
+                                        it.libraryManga.lastRead != null
+                                }
                                 .distinctBy { it.id }
                                 .sortedByDescending { it.libraryManga.lastRead }
                                 .take(10)

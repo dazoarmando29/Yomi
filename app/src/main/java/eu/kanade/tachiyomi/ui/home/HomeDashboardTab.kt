@@ -110,7 +110,10 @@ data object HomeDashboardTab : Tab {
                                 ContinueReadingRow(
                                     items = state.continueReading,
                                     onClickManga = openManga,
-                                    onContinueReadingClicked = { haptic.performHapticFeedback(HapticFeedbackType.LongPress); resume(it) },
+                                    onContinueReadingClicked = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        resume(it)
+                                    },
                                 )
                             }
                         }

@@ -22,7 +22,34 @@ plugins {
     alias(libs.plugins.apollo)
 }
 
-if (Config.includeTelemetry) {
+// Upstream Mihon ships its own google-services.json (Firebase project "mihonapp",
+// clients app.mihon*). Yomi's application ids (app.yomi.reader*) never match it, and
+// crash reports must not go to Mihon's Firebase project anyway, so telemetry is only
+// applied when google-services.json actually declares a client for one of our ids.
+// Without this guard, any -Pdist=ci/-Pdist=github build fails in
+// process*GoogleServices with "No matching client found for package name".
+val googleServicesFile = layout.projectDirectory.file("google-services.json").asFile
+val googleServicesPackages = Regex("\"package_name\"\\s*:\\s*\"([^\"]+)\"")
+    .findAll(googleServicesFile.takeIf { it.exists() }?.readText().orEmpty())
+    .map { it.groupValues[1] }
+    .toSet()
+val yomiApplicationIds = listOf(
+    "app.yomi.reader",
+    "app.yomi.reader.dev",
+    "app.yomi.reader.foss",
+    "app.yomi.reader.debug",
+    "app.yomi.reader.benchmark",
+)
+val hasMatchingGoogleServicesClient = yomiApplicationIds.any { it in googleServicesPackages }
+val includeTelemetry = Config.includeTelemetry && hasMatchingGoogleServicesClient
+if (Config.includeTelemetry && !hasMatchingGoogleServicesClient) {
+    logger.warn(
+        "google-services.json declares no client for ${yomiApplicationIds.joinToString()} " +
+            "(found: ${googleServicesPackages.joinToString()}); disabling telemetry for this build",
+    )
+}
+
+if (includeTelemetry) {
     pluginManager.apply {
         apply(libs.plugins.google.services.get().pluginId)
         apply(libs.plugins.firebase.crashlytics.get().pluginId)
@@ -40,7 +67,7 @@ android {
         versionCode = 39
         versionName = "0.21.3"
 
-        buildConfigField("boolean", "TELEMETRY_INCLUDED", "${Config.includeTelemetry}")
+        buildConfigField("boolean", "TELEMETRY_INCLUDED", "$includeTelemetry")
         buildConfigField("boolean", "UPDATER_ENABLED", "${Config.enableUpdater}")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -109,7 +136,7 @@ android {
             matchingFallbacks.addAll(commonMatchingFallbacks)
         }
 
-        if (Config.includeTelemetry) {
+        if (includeTelemetry) {
             configureEach {
                 configure<CrashlyticsExtension> {
                     mappingFileUploadEnabled = Config.uploadCrashlyticsMapping

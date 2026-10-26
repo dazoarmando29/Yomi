@@ -45,8 +45,10 @@ object UpdateEligibilityEngine {
         }
 
         val needsVerification = record.consecutiveFailures >= VERIFICATION_FAILURE_THRESHOLD ||
-            (facts.isCompleted.not() && record.lastSuccessAt > 0 &&
-                now - record.lastSuccessAt > LONG_UNCHECKED_DAYS * DAY_MS * 2)
+            (
+                facts.isCompleted.not() && record.lastSuccessAt > 0 &&
+                    now - record.lastSuccessAt > LONG_UNCHECKED_DAYS * DAY_MS * 2
+                )
 
         when (mode) {
             UpdateMode.SMART -> {

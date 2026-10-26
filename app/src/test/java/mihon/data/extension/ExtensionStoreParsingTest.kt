@@ -49,7 +49,8 @@ class ExtensionStoreParsingTest {
         store.name shouldBe "Example Source"
         store.pkgName shouldBe "eu.kanade.tachiyomi.extension.en.example"
         store.apkUrl shouldBe "https://keiyoushi.github.io/extensions/apk/example.apk"
-        store.iconUrl shouldBe "https://keiyoushi.github.io/extensions/icon/eu.kanade.tachiyomi.extension.en.example.png"
+        store.iconUrl shouldBe
+            "https://keiyoushi.github.io/extensions/icon/eu.kanade.tachiyomi.extension.en.example.png"
         store.libVersion shouldBe 1.4
         store.versionCode shouldBe 25L
         store.versionName shouldBe "1.4.25"

@@ -18,8 +18,8 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import eu.kanade.presentation.more.settings.Preference
-import eu.kanade.tachiyomi.smartsource.SourceHealthWorker
 import eu.kanade.tachiyomi.smartsource.SmartSourceViewModel
+import eu.kanade.tachiyomi.smartsource.SourceHealthWorker
 import eu.kanade.tachiyomi.smartsource.model.HealthRecord
 import eu.kanade.tachiyomi.smartsource.model.HealthStatus
 import eu.kanade.tachiyomi.ui.home.HomeScreen

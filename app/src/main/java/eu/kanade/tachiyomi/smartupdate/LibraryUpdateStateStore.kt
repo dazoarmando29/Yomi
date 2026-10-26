@@ -28,7 +28,15 @@ class LibraryUpdateStateStore(context: Context) {
         val records = history.records.toMutableList()
         val index = records.indexOfFirst { it.mangaId == mangaId }
         val current = if (index >= 0) records[index] else UpdateRecord(mangaId = mangaId, title = title)
-        val updated = transform(current).let { if (it.title.isEmpty() && title.isNotEmpty()) it.copy(title = title) else it }
+        val updated = transform(current).let {
+            if (it.title.isEmpty() &&
+                title.isNotEmpty()
+            ) {
+                it.copy(title = title)
+            } else {
+                it
+            }
+        }
         if (index >= 0) records[index] = updated else records += updated
         save(records, history.events)
     }

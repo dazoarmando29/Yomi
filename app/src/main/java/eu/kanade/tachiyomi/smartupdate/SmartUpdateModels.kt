@@ -131,7 +131,7 @@ object UpdateSummaryBuilder {
             pending = records.count {
                 it.state == UpdateState.PENDING ||
                     it.state == UpdateState.NEVER_CHECKED ||
-                    it.state == UpdateState.FAILED && it.nextEligibleAt <= now
+                    (it.state == UpdateState.FAILED && it.nextEligibleAt <= now)
             },
             skipped = records.count { it.state == UpdateState.SKIPPED },
             failed = records.count { it.state == UpdateState.FAILED },

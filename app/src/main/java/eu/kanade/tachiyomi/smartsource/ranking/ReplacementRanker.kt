@@ -57,7 +57,9 @@ object ReplacementRanker {
             } else {
                 0.5
             }
-            val byLatest = if (originalLatestChapterNumber != null && latestChapterNumber != null && originalLatestChapterNumber > 0.0) {
+            val byLatest = if (originalLatestChapterNumber != null && latestChapterNumber != null &&
+                originalLatestChapterNumber > 0.0
+            ) {
                 (latestChapterNumber / originalLatestChapterNumber).coerceIn(0.0, 1.0)
             } else {
                 byCount

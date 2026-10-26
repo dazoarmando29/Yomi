@@ -55,7 +55,10 @@ object ChapterMatcher {
         return original.map { old ->
             val number = old.number
             val numberMatch = if (number != null) {
-                replacement.firstOrNull { it.order !in used && it.number != null && abs(it.number - number) < NUMBER_EPSILON }
+                replacement.firstOrNull {
+                    it.order !in used && it.number != null &&
+                        abs(it.number - number) < NUMBER_EPSILON
+                }
             } else {
                 null
             }

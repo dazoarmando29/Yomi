@@ -40,22 +40,37 @@ fun MangaContextMenuDialog(
             Column {
                 if (onContinueReading != null && manga.hasStarted && manga.unreadCount > 0) {
                     TextButton(
-                        onClick = { onDismiss(); onContinueReading() },
+                        onClick = {
+                            onDismiss()
+                            onContinueReading()
+                        },
                         modifier = Modifier,
                     ) {
                         Text(stringResource(MR.strings.yomi_menu_continue_reading))
                     }
                 }
-                TextButton(onClick = { onDismiss(); onViewDetails() }) {
+                TextButton(onClick = {
+                    onDismiss()
+                    onViewDetails()
+                }) {
                     Text(stringResource(MR.strings.yomi_menu_view_details))
                 }
-                TextButton(onClick = { onDismiss(); onFindAlternatives() }) {
+                TextButton(onClick = {
+                    onDismiss()
+                    onFindAlternatives()
+                }) {
                     Text(stringResource(MR.strings.yomi_menu_find_alternatives))
                 }
-                TextButton(onClick = { onDismiss(); onTogglePin() }) {
+                TextButton(onClick = {
+                    onDismiss()
+                    onTogglePin()
+                }) {
                     Text(stringResource(MR.strings.yomi_menu_pin))
                 }
-                TextButton(onClick = { onDismiss(); onSelect() }) {
+                TextButton(onClick = {
+                    onDismiss()
+                    onSelect()
+                }) {
                     Text(stringResource(MR.strings.yomi_menu_select))
                 }
             }
