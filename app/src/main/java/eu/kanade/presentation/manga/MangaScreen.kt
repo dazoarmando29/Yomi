@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -31,6 +32,7 @@ import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -262,6 +264,7 @@ private fun MangaScreenSmallImpl(
     onInvertSelection: () -> Unit,
 ) {
     val chapterListState = rememberLazyListState()
+    var chapterSearchQuery by remember { mutableStateOf("") }
 
     val (chapters, listItem, isAnySelected) = remember(state) {
         Triple(
@@ -269,6 +272,19 @@ private fun MangaScreenSmallImpl(
             second = state.chapterListItems,
             third = state.isAnySelected,
         )
+    }
+
+    val filteredListItems = remember(listItem, chapterSearchQuery) {
+        if (chapterSearchQuery.isBlank()) {
+            listItem
+        } else {
+            listItem.filter {
+                it is ChapterList.Item && (
+                    it.chapter.name.contains(chapterSearchQuery, ignoreCase = true) ||
+                        it.chapter.chapterNumber.toString().contains(chapterSearchQuery, ignoreCase = true)
+                    )
+            }
+        }
     }
 
     BackHandler(enabled = isAnySelected) {
@@ -425,9 +441,22 @@ private fun MangaScreenSmallImpl(
                         )
                     }
 
+                    item(
+                        key = "chapter_search",
+                        contentType = "chapter_search",
+                    ) {
+                        OutlinedTextField(
+                            value = chapterSearchQuery,
+                            onValueChange = { chapterSearchQuery = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            label = { Text(stringResource(MR.strings.yomi_chapter_search)) },
+                        )
+                    }
+
                     sharedChapterItems(
                         manga = state.manga,
-                        chapters = listItem,
+                        chapters = filteredListItems,
                         isAnyChapterSelected = state.selectedChapters.isNotEmpty(),
                         chapterSwipeStartAction = chapterSwipeStartAction,
                         chapterSwipeEndAction = chapterSwipeEndAction,
