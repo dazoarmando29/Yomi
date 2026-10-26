@@ -3,7 +3,11 @@ package eu.kanade.tachiyomi.ui.home
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import eu.kanade.tachiyomi.smartsource.health.SourceHealthStore
 import eu.kanade.tachiyomi.smartsource.model.HealthStatus
 import eu.kanade.tachiyomi.ui.library.LibraryItem
@@ -21,6 +25,8 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 
 @Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class, binding = binding<ViewModel>())
 class HomeDashboardViewModel(
     private val context: Context,
     private val getLibraryManga: GetLibraryManga,

@@ -3,7 +3,11 @@ package eu.kanade.tachiyomi.smartsource
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import eu.kanade.tachiyomi.smartsource.health.HealthCheckReport
 import eu.kanade.tachiyomi.smartsource.health.SourceHealthChecker
 import eu.kanade.tachiyomi.smartsource.health.SourceHealthStore
@@ -17,6 +21,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class, binding = binding<ViewModel>())
 class SmartSourceViewModel(
     private val context: Context,
     private val checker: SourceHealthChecker,

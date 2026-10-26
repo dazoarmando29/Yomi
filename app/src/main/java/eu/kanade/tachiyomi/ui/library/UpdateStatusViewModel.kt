@@ -3,7 +3,11 @@ package eu.kanade.tachiyomi.ui.library
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import eu.kanade.tachiyomi.smartupdate.LibraryUpdateStateStore
 import eu.kanade.tachiyomi.smartupdate.UpdateEvent
 import eu.kanade.tachiyomi.smartupdate.UpdateRecord
@@ -18,6 +22,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class, binding = binding<ViewModel>())
 class UpdateStatusViewModel(private val context: Context) : ViewModel() {
 
     val state: StateFlow<State>
