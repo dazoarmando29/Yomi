@@ -81,7 +81,7 @@ class ExtensionInstallActivity : Activity() {
             RESULT_CANCELED -> InstallStep.Idle
             else -> {
                 logcat(LogPriority.INFO) { "The installer reported a failure ($resultCode)" }
-                InstallStep.Error
+                InstallStep.Error("The installer reported a failure (code $resultCode)")
             }
         }
         extensionManager.updateInstallStep(downloadId, newStep)

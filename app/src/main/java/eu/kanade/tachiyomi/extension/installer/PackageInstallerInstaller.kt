@@ -54,7 +54,7 @@ class PackageInstallerInstaller(private val service: Service) : Installer(servic
                         logcat(LogPriority.INFO) {
                             "The system installer asked for an action it didn't provide: $intent"
                         }
-                        continueQueue(InstallStep.Error)
+                        continueQueue(InstallStep.Error("The system installer did not provide a confirmation step"))
                         return
                     }
                     userAction.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -66,7 +66,7 @@ class PackageInstallerInstaller(private val service: Service) : Installer(servic
                         activeSession?.let { (_, sessionId) ->
                             runCatching { packageInstaller.abandonSession(sessionId) }
                         }
-                        continueQueue(InstallStep.Error)
+                        continueQueue(InstallStep.Error("No installer app is available to confirm the installation"))
                     }
                 }
                 PackageInstaller.STATUS_FAILURE_ABORTED -> {
@@ -74,12 +74,16 @@ class PackageInstallerInstaller(private val service: Service) : Installer(servic
                 }
                 PackageInstaller.STATUS_SUCCESS -> continueQueue(InstallStep.Installed)
                 else -> {
+                    val statusMessage = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
                     logcat(LogPriority.INFO) {
-                        "The system installer failed ($status): ${intent.getStringExtra(
-                            PackageInstaller.EXTRA_STATUS_MESSAGE,
-                        )}"
+                        "The system installer failed ($status): $statusMessage"
                     }
-                    continueQueue(InstallStep.Error)
+                    continueQueue(
+                        InstallStep.Error(
+                            statusMessage?.takeIf { it.isNotBlank() }
+                                ?: "The system installer failed (status $status)",
+                        ),
+                    )
                 }
             }
         }
@@ -129,7 +133,7 @@ class PackageInstallerInstaller(private val service: Service) : Installer(servic
                     // Already abandoned when the entry was cancelled mid-copy
                     runCatching { packageInstaller.abandonSession(sessionId) }
                 }
-                if (getActiveEntry() == entry) continueQueue(InstallStep.Error)
+                if (getActiveEntry() == entry) continueQueue(InstallStep.Error())
             }
         }
     }

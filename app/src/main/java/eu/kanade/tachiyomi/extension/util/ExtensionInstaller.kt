@@ -17,6 +17,7 @@ import eu.kanade.tachiyomi.util.system.isPackageInstalled
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import tachiyomi.core.common.util.system.logcat
 import java.io.File
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -72,27 +74,14 @@ class ExtensionInstaller(
             val tmpFile = File(context.cacheDir, "extension_${extension.pkgName}.apk")
             try {
                 step.value = InstallStep.Downloading
-                val request = Request.Builder().url(extension.apkUrl).build()
-                httpClient.newCall(request).await().use { response ->
-                    if (!response.isSuccessful) {
-                        throw Exception("Failed to download extension")
-                    }
-                    // Interruptible so cancelInstall stops the body read too
-                    runInterruptible {
-                        response.body.byteStream().use { input ->
-                            tmpFile.outputStream().use { output ->
-                                input.copyTo(output)
-                            }
-                        }
-                    }
-                }
+                downloadApkWithRetry(extension.apkUrl, tmpFile)
 
                 // The store's index names the apk, but nothing ties what's served there to the store's key
                 val packageInfo = ExtensionLoader.getArchivePackageInfo(context, tmpFile)
                     ?.takeIf { extension.store.signingKey in ExtensionLoader.getSignatures(it).orEmpty() }
                 if (packageInfo == null) {
                     tmpFile.delete()
-                    throw Exception("Extension isn't signed with the key of ${extension.store.name}")
+                    throw SignatureMismatchException(extension.store.name)
                 }
 
                 ensureActive()
@@ -101,7 +90,8 @@ class ExtensionInstaller(
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 logcat(LogPriority.INFO, e)
-                step.value = InstallStep.Error
+                tmpFile.delete()
+                step.value = InstallStep.Error(e.toInstallErrorReason())
             }
         }
 
@@ -165,10 +155,50 @@ class ExtensionInstaller(
             updateInstallStep(downloadId, InstallStep.Installed)
         } catch (e: Exception) {
             logcat(LogPriority.INFO, e) { "Failed to install extension privately" }
-            updateInstallStep(downloadId, InstallStep.Error)
+            updateInstallStep(downloadId, InstallStep.Error(e.toInstallErrorReason()))
         }
 
         tempFile.delete()
+    }
+
+    /**
+     * Downloads the extension apk, retrying transient network failures with a short backoff.
+     * Permanent failures like 4xx responses and signature problems are not retried.
+     */
+    private suspend fun downloadApkWithRetry(url: String, tmpFile: File) {
+        var attempt = 0
+        while (true) {
+            try {
+                val request = Request.Builder().url(url).build()
+                httpClient.newCall(request).await().use { response ->
+                    if (!response.isSuccessful) {
+                        if (response.code in HTTP_SERVER_ERROR_MIN..HTTP_SERVER_ERROR_MAX) {
+                            throw RetryableDownloadException("HTTP ${response.code}")
+                        }
+                        throw DownloadFailedException("HTTP ${response.code}")
+                    }
+                    // Interruptible so cancelInstall stops the body read too
+                    runInterruptible {
+                        response.body.byteStream().use { input ->
+                            tmpFile.outputStream().use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+                    }
+                }
+                return
+            } catch (e: IOException) {
+                attempt++
+                if (attempt >= MAX_DOWNLOAD_ATTEMPTS) {
+                    throw if (e is RetryableDownloadException) {
+                        DownloadFailedException(e.message ?: "network error")
+                    } else {
+                        e
+                    }
+                }
+                delay(RETRY_BACKOFF_MILLIS * (1L shl (attempt - 1)))
+            }
+        }
     }
 
     /**
@@ -209,5 +239,28 @@ class ExtensionInstaller(
     companion object {
         const val APK_MIME = "application/vnd.android.package-archive"
         const val EXTRA_DOWNLOAD_ID = "ExtensionInstaller.extra.DOWNLOAD_ID"
+
+        private const val MAX_DOWNLOAD_ATTEMPTS = 3
+        private const val RETRY_BACKOFF_MILLIS = 750L
+        private const val HTTP_SERVER_ERROR_MIN = 500
+        private const val HTTP_SERVER_ERROR_MAX = 599
+    }
+}
+
+private class SignatureMismatchException(storeName: String) : Exception(
+    "Signature verification failed: the apk is not signed with the key of $storeName",
+)
+
+private class RetryableDownloadException(message: String) : IOException(message)
+
+private class DownloadFailedException(message: String) : Exception("Download failed: $message")
+
+private fun Exception.toInstallErrorReason(): String {
+    return when (this) {
+        is SignatureMismatchException -> message ?: "Signature verification failed"
+        is DownloadFailedException -> message ?: "Download failed"
+        is java.net.SocketTimeoutException -> "The download timed out. Check your connection and try again."
+        is IOException -> "Network error: ${message ?: "connection problem"}. The installed extension was left unchanged."
+        else -> message ?: "Installation failed. The installed extension was left unchanged."
     }
 }

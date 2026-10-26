@@ -6,9 +6,9 @@ sealed interface InstallStep {
     data object Downloading : InstallStep
     data object Installing : InstallStep
     data object Installed : InstallStep
-    data object Error : InstallStep
+    data class Error(val reason: String? = null) : InstallStep
 
     fun isCompleted(): Boolean {
-        return this == Installed || this == Error || this == Idle
+        return this is Installed || this is Error || this is Idle
     }
 }

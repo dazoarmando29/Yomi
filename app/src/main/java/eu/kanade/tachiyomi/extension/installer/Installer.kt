@@ -113,7 +113,7 @@ abstract class Installer(private val service: Service) {
         val remaining = synchronized(queue) { queue.toList().also { queue.clear() } }
         remaining.forEach {
             logcat(LogPriority.INFO) { "The installer stopped before installing ${it.downloadId}" }
-            extensionManager.updateInstallStep(it.downloadId, InstallStep.Error)
+            extensionManager.updateInstallStep(it.downloadId, InstallStep.Error("Installation was interrupted"))
         }
         waitingInstall.store(null)
     }

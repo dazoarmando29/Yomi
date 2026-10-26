@@ -427,12 +427,15 @@ private fun ExtensionItemMetadata(
         }
 
         val notable = listOfNotNull(
-            when (installStep) {
-                InstallStep.Pending -> MR.strings.ext_pending
-                InstallStep.Downloading -> MR.strings.ext_downloading
-                InstallStep.Installing -> MR.strings.ext_installing
+            when {
+                installStep == InstallStep.Pending -> MR.strings.ext_pending to MaterialTheme.colorScheme.primary
+                installStep == InstallStep.Downloading -> MR.strings.ext_downloading to MaterialTheme.colorScheme.primary
+                installStep == InstallStep.Installing -> MR.strings.ext_installing to MaterialTheme.colorScheme.primary
+                installStep is InstallStep.Error && installStep.reason != null -> {
+                    installStep.reason to MaterialTheme.colorScheme.error
+                }
                 else -> null
-            }?.let { it to MaterialTheme.colorScheme.primary },
+            },
             when {
                 extension is Extension.NotLoaded ->
                     extension.reason.labelRes?.let { it to MaterialTheme.colorScheme.error }
@@ -446,7 +449,8 @@ private fun ExtensionItemMetadata(
                 ?.let { MR.strings.ext_installer_private to MaterialTheme.colorScheme.onSurfaceVariant },
         )
         notable.forEach { (label, color) ->
-            ExtensionPill(text = stringResource(label), color = color)
+            val text = if (label is StringResource) stringResource(label) else label.toString()
+            ExtensionPill(text = text, color = color)
         }
     }
 }
@@ -494,7 +498,7 @@ private fun ExtensionItemActions(
         }
 
         val action = when {
-            installStep == InstallStep.Error -> MaterialSymbols.Rounded.Refresh to MR.strings.action_retry
+            installStep is InstallStep.Error -> MaterialSymbols.Rounded.Refresh to MR.strings.action_retry
             extension is Extension.Available -> MaterialSymbols.Rounded.Download to MR.strings.ext_install
             extension is Extension.Installed && extension.hasUpdate -> {
                 MaterialSymbols.Rounded.Download to MR.strings.ext_update
