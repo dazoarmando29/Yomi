@@ -34,7 +34,9 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.WarningBanner
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.data.backup.BackupFileValidator
+import eu.kanade.tachiyomi.data.backup.BackupFormat
+import eu.kanade.tachiyomi.data.backup.BackupImportInspector
+import eu.kanade.tachiyomi.data.backup.BackupImportSummary
 import eu.kanade.tachiyomi.data.backup.restore.BackupRestoreWorker
 import eu.kanade.tachiyomi.data.backup.restore.RestoreOptions
 import eu.kanade.tachiyomi.util.system.DeviceUtil
@@ -66,7 +68,7 @@ class RestoreBackupScreen(
         Scaffold(
             topBar = {
                 AppBar(
-                    title = stringResource(MR.strings.pref_restore_backup),
+                    title = stringResource(MR.strings.yomi_import_backup),
                     navigateUp = navigator::pop,
                     scrollBehavior = it,
                 )
@@ -88,6 +90,11 @@ class RestoreBackupScreen(
                 }
 
                 if (state.canRestore) {
+                    state.summary?.let { summary ->
+                        previewItem(summary)
+                        restoreContentsItem(summary)
+                    }
+
                     item {
                         SectionCard {
                             RestoreOptions.options.forEach { option ->
@@ -105,6 +112,117 @@ class RestoreBackupScreen(
 
                 if (state.error != null) {
                     errorMessageItem(state.error)
+                }
+            }
+        }
+    }
+
+    private fun LazyListScope.previewItem(summary: BackupImportSummary) {
+        item {
+            SectionCard {
+                Column(
+                    modifier = Modifier.padding(horizontal = MaterialTheme.padding.medium),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.padding.small),
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.yomi_backup_preview),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = when (summary.format) {
+                            BackupFormat.MIHON_TACHIBK -> stringResource(MR.strings.yomi_backup_format_mihon)
+                            BackupFormat.TACHIYOMI_PROTO -> stringResource(MR.strings.yomi_backup_format_tachiyomi)
+                            else -> stringResource(MR.strings.yomi_backup_format_proto)
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = stringResource(MR.strings.yomi_backup_stats_manga, summary.entryCount),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = stringResource(MR.strings.yomi_backup_stats_categories, summary.categoryCount),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = stringResource(
+                            MR.strings.yomi_backup_stats_chapters,
+                            summary.stats.chapterCount,
+                            summary.stats.readChapterCount,
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    if (summary.hasReadingProgress) {
+                        Text(
+                            text = stringResource(
+                                MR.strings.yomi_backup_stats_progress,
+                                summary.stats.entriesWithProgressCount,
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Text(
+                            text = stringResource(MR.strings.yomi_backup_stats_history, summary.stats.historyCount),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                    if (summary.hasTracking) {
+                        Text(
+                            text = stringResource(MR.strings.yomi_backup_stats_tracking, summary.stats.trackingCount),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun LazyListScope.restoreContentsItem(summary: BackupImportSummary) {
+        item {
+            SectionCard {
+                Column(
+                    modifier = Modifier.padding(horizontal = MaterialTheme.padding.medium),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.padding.small),
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.yomi_backup_will_restore),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = "• " + stringResource(MR.strings.yomi_backup_restore_library),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = "• " + stringResource(MR.strings.yomi_backup_restore_progress),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    if (summary.stats.historyCount > 0) {
+                        Text(
+                            text = "• " + stringResource(MR.strings.yomi_backup_restore_history),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                    if (summary.hasTracking) {
+                        Text(
+                            text = "• " + stringResource(MR.strings.yomi_backup_restore_tracking),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                    if (summary.hasAppPreferences) {
+                        Text(
+                            text = "• " + stringResource(MR.strings.yomi_backup_restore_settings),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                    if (summary.hasSourcePreferences) {
+                        Text(
+                            text = "• " + stringResource(MR.strings.yomi_backup_restore_source_settings),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                    Text(
+                        text = stringResource(MR.strings.yomi_backup_resume_note),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
             }
         }
@@ -179,7 +297,7 @@ class RestoreBackupScreen(
 @AssistedInject
 class RestoreBackupViewModel(
     @Assisted private val uri: String,
-    private val backupFileValidator: BackupFileValidator,
+    private val backupImportInspector: BackupImportInspector,
     private val context: Context,
 ) : ViewModel() {
 
@@ -216,38 +334,37 @@ class RestoreBackupViewModel(
     }
 
     private suspend fun validate(uri: Uri) {
-        val results = try {
-            backupFileValidator.validate(uri)
+        val summary = try {
+            backupImportInspector.inspect(uri)
         } catch (e: Exception) {
-            setError(
-                error = InvalidRestore(uri, e.message.toString()),
-                canRestore = false,
-            )
+            state.update {
+                it.copy(
+                    summary = null,
+                    error = InvalidRestore(uri, e.message.toString()),
+                    canRestore = false,
+                )
+            }
             return
         }
 
-        if (results.missingSources.isNotEmpty() || results.missingTrackers.isNotEmpty()) {
-            setError(
-                error = MissingRestoreComponents(uri, results.missingSources, results.missingTrackers),
-                canRestore = true,
-            )
-            return
+        val error = if (summary.missingSources.isNotEmpty() || summary.missingTrackers.isNotEmpty()) {
+            MissingRestoreComponents(uri, summary.missingSources, summary.missingTrackers)
+        } else {
+            null
         }
 
-        setError(error = null, canRestore = true)
-    }
-
-    private fun setError(error: Any?, canRestore: Boolean) {
         state.update {
             it.copy(
+                summary = summary,
                 error = error,
-                canRestore = canRestore,
+                canRestore = true,
             )
         }
     }
 
     @Immutable
     data class State(
+        val summary: BackupImportSummary? = null,
         val error: Any? = null,
         val canRestore: Boolean = false,
         val options: RestoreOptions = RestoreOptions(),

@@ -108,6 +108,13 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.tachibk" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.tachibk" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.tachibk" />
+                <data android:pathPattern=".*\\.proto\\.gz" />
+                <data android:pathPattern=".*\\..*\\.proto\\.gz" />
+                <data android:pathPattern=".*\\..*\\..*\\.proto\\.gz" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.proto\\.gz" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.proto\\.gz" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.proto\\.gz" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.proto\\.gz" />
             </intent-filter>
 
             <!--suppress AndroidDomInspection -->

@@ -246,7 +246,7 @@ object SettingsDataScreen : SearchableSettings {
                                     },
                                     shape = SegmentedButtonDefaults.itemShape(1, 2),
                                 ) {
-                                    Text(stringResource(MR.strings.pref_restore_backup))
+                                    Text(stringResource(MR.strings.yomi_import_backup))
                                 }
                             }
                         },
