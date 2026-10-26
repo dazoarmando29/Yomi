@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -120,6 +123,7 @@ private fun SourceItem(
         onClickItem = { onClickItem(source, Listing.Popular) },
         onLongClickItem = { onLongClickItem(source) },
         action = {
+            SourceHealthIndicator(sourceId = source.id)
             if (source.supportsLatest) {
                 TextButton(onClick = { onClickItem(source, Listing.Latest) }) {
                     Text(
@@ -136,6 +140,36 @@ private fun SourceItem(
             )
         },
     )
+}
+
+@Composable
+private fun SourceHealthIndicator(sourceId: Long) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val record = androidx.compose.runtime.remember(sourceId) {
+        eu.kanade.tachiyomi.smartsource.health.SourceHealthStore(context)
+            .get(eu.kanade.tachiyomi.smartsource.model.HealthRecord.sourceKey(sourceId))
+    }
+    val color = when {
+        record.status in setOf(
+            eu.kanade.tachiyomi.smartsource.model.HealthStatus.BROKEN,
+            eu.kanade.tachiyomi.smartsource.model.HealthStatus.INCOMPATIBLE,
+            eu.kanade.tachiyomi.smartsource.model.HealthStatus.REPOSITORY_MISSING,
+            eu.kanade.tachiyomi.smartsource.model.HealthStatus.AUTHENTICATION_REQUIRED,
+        ) -> MaterialTheme.colorScheme.error
+        record.status == eu.kanade.tachiyomi.smartsource.model.HealthStatus.TEMPORARILY_UNAVAILABLE &&
+            record.consecutiveFailures >= 2 -> MaterialTheme.colorScheme.errorContainer
+        record.status == eu.kanade.tachiyomi.smartsource.model.HealthStatus.UPDATE_AVAILABLE ->
+            MaterialTheme.colorScheme.primary
+        else -> null
+    }
+    if (color != null) {
+        androidx.compose.foundation.layout.Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(androidx.compose.foundation.shape.CircleShape)
+                .background(color),
+        )
+    }
 }
 
 @Composable

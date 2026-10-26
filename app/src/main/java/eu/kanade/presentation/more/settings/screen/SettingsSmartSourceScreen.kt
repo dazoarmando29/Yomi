@@ -165,6 +165,13 @@ object SettingsSmartSourceScreen : SearchableSettings {
 private const val MAX_VISIBLE_RECORDS = 12
 
 private fun HealthRecord.summary(): String {
+    val label = when {
+        key.startsWith("ext:") -> "Extension " + key.removePrefix("ext:")
+        key.startsWith("repo:") -> "Repository " + key.removePrefix("repo:")
+        key.startsWith("source:") -> "Source " + key.removePrefix("source:")
+        else -> key
+    }
+    val statusText = status.name.lowercase().replace('_', ' ')
     val error = lastError?.let { " - $it" }.orEmpty()
-    return "$key: ${status.name}$error"
+    return "$label: $statusText$error"
 }
