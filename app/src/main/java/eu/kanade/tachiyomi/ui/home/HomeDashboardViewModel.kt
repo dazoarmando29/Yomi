@@ -21,6 +21,7 @@ import mihon.app.di.appGraph
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.manga.interactor.GetLibraryManga
+import tachiyomi.domain.source.service.SourceManager
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 
@@ -31,6 +32,7 @@ class HomeDashboardViewModel(
     private val context: Context,
     private val getLibraryManga: GetLibraryManga,
     private val getChaptersByMangaId: GetChaptersByMangaId,
+    private val sourceManager: SourceManager,
 ) : ViewModel() {
 
     val state: StateFlow<State>
@@ -43,6 +45,9 @@ class HomeDashboardViewModel(
     fun refresh() {
         viewModelScope.launch {
             val library = withContext(Dispatchers.IO) { getLibraryManga.await() }
+            val sourcesById = withContext(Dispatchers.IO) {
+                sourceManager.getAll().associateBy { it.id }
+            }
             val homePreferences = withContext(Dispatchers.IO) {
                 context.appGraph.homePreferences
             }
@@ -71,8 +76,8 @@ class HomeDashboardViewModel(
 
             state.update {
                 it.copy(
-                    continueReading = continueReading.map(::item),
-                    recentlyUpdated = recentlyUpdated.map(::item),
+                    continueReading = continueReading.map { manga -> item(manga, sourcesById) },
+                    recentlyUpdated = recentlyUpdated.map { manga -> item(manga, sourcesById) },
                     librarySize = library.size,
                     unreadCount = library.sumOf { m -> m.unreadCount },
                     healthProblems = healthProblems,
@@ -90,20 +95,28 @@ class HomeDashboardViewModel(
             ?.id
     }
 
-    private fun item(manga: LibraryManga): LibraryItem = LibraryItem(
-        libraryManga = manga,
-        downloadCount = 0,
-        unreadCount = manga.unreadCount,
-        isLocal = false,
-        sourceName = "",
-        sourceLanguage = "",
-        badges = LibraryItem.Badges(
+    private fun item(
+        manga: LibraryManga,
+        sourcesById: Map<Long, eu.kanade.tachiyomi.source.Source>,
+    ): LibraryItem {
+        val source = sourcesById[manga.manga.source]
+        val sourceName = source?.name.orEmpty()
+        val sourceLanguage = source?.lang.orEmpty()
+        return LibraryItem(
+            libraryManga = manga,
             downloadCount = 0,
             unreadCount = manga.unreadCount,
             isLocal = false,
-            sourceLanguage = "",
-        ),
-    )
+            sourceName = sourceName,
+            sourceLanguage = sourceLanguage,
+            badges = LibraryItem.Badges(
+                downloadCount = 0,
+                unreadCount = manga.unreadCount,
+                isLocal = false,
+                sourceLanguage = sourceLanguage,
+            ),
+        )
+    }
 
     data class State(
         val continueReading: List<LibraryItem> = emptyList(),
