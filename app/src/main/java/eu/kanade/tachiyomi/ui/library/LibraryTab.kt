@@ -11,7 +11,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -31,6 +33,7 @@ import eu.kanade.presentation.library.DeleteLibraryMangaDialog
 import eu.kanade.presentation.library.LibrarySettingsDialog
 import eu.kanade.presentation.library.UpdateStatusScreen
 import eu.kanade.presentation.library.components.LibraryContent
+import eu.kanade.presentation.library.components.MangaContextMenuDialog
 import eu.kanade.presentation.library.components.LibraryToolbar
 import eu.kanade.presentation.manga.components.LibraryBottomActionMenu
 import eu.kanade.presentation.more.onboarding.GETTING_STARTED_URL
@@ -93,6 +96,21 @@ data object LibraryTab : Tab {
         val state by viewModel.state.collectAsStateWithLifecycle()
 
         val snackbarHostState = remember { SnackbarHostState() }
+        var contextMenuSelection by remember {
+            mutableStateOf<Pair<Category, LibraryManga>?>(null)
+        }
+        val onContinueFromMenu: (LibraryManga) -> Unit = { libraryManga ->
+            scope.launch {
+                val chapter = viewModel.getNextUnreadChapter(libraryManga.manga)
+                if (chapter != null) {
+                    context.startActivity(
+                        ReaderActivity.newIntent(context, chapter.mangaId, chapter.id),
+                    )
+                } else {
+                    snackbarHostState.showSnackbar(context.stringResource(MR.strings.no_next_chapter))
+                }
+            }
+        }
 
         val onClickRefresh: suspend (Category?) -> Boolean = { category ->
             val started = LibraryUpdateWorker.startNow(context.workManager, category)
@@ -105,6 +123,24 @@ data object LibraryTab : Tab {
                 snackbarHostState.showSnackbar(context.stringResource(msgRes))
             }
             started
+        }
+
+        contextMenuSelection?.let { (category, manga) ->
+            MangaContextMenuDialog(
+                manga = manga,
+                onContinueReading = if (state.showMangaContinueButton) {
+                    { onContinueFromMenu(manga) }
+                } else {
+                    null
+                },
+                onViewDetails = { navigator.push(MangaScreen(manga.id)) },
+                onFindAlternatives = { navigator.push(MigrationConfigScreen(listOf(manga.id))) },
+                onSelect = {
+                    viewModel.toggleSelection(category, manga)
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                },
+                onDismiss = { contextMenuSelection = null },
+            )
         }
 
         Scaffold(
@@ -213,8 +249,12 @@ data object LibraryTab : Tab {
                         }.takeIf { state.showMangaContinueButton },
                         onToggleSelection = viewModel::toggleSelection,
                         onToggleRangeSelection = { category, manga ->
-                            viewModel.toggleRangeSelection(category, manga)
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            if (state.selection.isNotEmpty()) {
+                                viewModel.toggleRangeSelection(category, manga)
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            } else {
+                                contextMenuSelection = category to manga
+                            }
                         },
                         onRefresh = { onClickRefresh(state.activeCategory) },
                         onGlobalSearchClicked = {
