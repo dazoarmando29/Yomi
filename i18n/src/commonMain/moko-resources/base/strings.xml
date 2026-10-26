@@ -659,6 +659,7 @@
     <string name="yomi_menu_view_details">View details</string>
     <string name="yomi_menu_find_alternatives">Find alternative sources</string>
     <string name="yomi_menu_select">Select for bulk actions</string>
+    <string name="yomi_recent_searches">Recent searches</string>
     <string name="pref_backup_interval">Automatic backup frequency</string>
     <string name="action_create">Create</string>
     <string name="backup_created">Backup created</string>
