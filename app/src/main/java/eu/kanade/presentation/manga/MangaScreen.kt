@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastMap
@@ -275,16 +276,7 @@ private fun MangaScreenSmallImpl(
     }
 
     val filteredListItems = remember(listItem, chapterSearchQuery) {
-        if (chapterSearchQuery.isBlank()) {
-            listItem
-        } else {
-            listItem.filter {
-                it is ChapterList.Item && (
-                    it.chapter.name.contains(chapterSearchQuery, ignoreCase = true) ||
-                        it.chapter.chapterNumber.toString().contains(chapterSearchQuery, ignoreCase = true)
-                    )
-            }
-        }
+        filterChapterListItems(listItem, chapterSearchQuery)
     }
 
     BackHandler(enabled = isAnySelected) {
@@ -445,12 +437,10 @@ private fun MangaScreenSmallImpl(
                         key = "chapter_search",
                         contentType = "chapter_search",
                     ) {
-                        OutlinedTextField(
-                            value = chapterSearchQuery,
-                            onValueChange = { chapterSearchQuery = it },
+                        ChapterSearchField(
+                            query = chapterSearchQuery,
+                            onQueryChange = { chapterSearchQuery = it },
                             modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            label = { Text(stringResource(MR.strings.yomi_chapter_search)) },
                         )
                     }
 
@@ -531,6 +521,10 @@ fun MangaScreenLargeImpl(
             second = state.chapterListItems,
             third = state.isAnySelected,
         )
+    }
+    var chapterSearchQuery by remember { mutableStateOf("") }
+    val filteredListItems = remember(listItem, chapterSearchQuery) {
+        filterChapterListItems(listItem, chapterSearchQuery)
     }
 
     val insetPadding = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal).asPaddingValues()
@@ -679,9 +673,22 @@ fun MangaScreenLargeImpl(
                                 )
                             }
 
+                            item(
+                                key = "chapter_search",
+                                contentType = "chapter_search",
+                            ) {
+                                ChapterSearchField(
+                                    query = chapterSearchQuery,
+                                    onQueryChange = { chapterSearchQuery = it },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                                )
+                            }
+
                             sharedChapterItems(
                                 manga = state.manga,
-                                chapters = listItem,
+                                chapters = filteredListItems,
                                 isAnyChapterSelected = state.selectedChapters.isNotEmpty(),
                                 chapterSwipeStartAction = chapterSwipeStartAction,
                                 chapterSwipeEndAction = chapterSwipeEndAction,
@@ -739,6 +746,31 @@ private fun SharedMangaBottomActionMenu(
             selected.fastAny { it.downloadState == Download.State.DOWNLOADED }
         },
     )
+}
+
+@Composable
+private fun ChapterSearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier,
+        singleLine = true,
+        label = { Text(stringResource(MR.strings.yomi_chapter_search)) },
+    )
+}
+
+internal fun filterChapterListItems(listItem: List<ChapterList>, query: String): List<ChapterList> {
+    if (query.isBlank()) return listItem
+    return listItem.filter {
+        it is ChapterList.Item && (
+            it.chapter.name.contains(query, ignoreCase = true) ||
+                it.chapter.chapterNumber.toString().contains(query, ignoreCase = true)
+            )
+    }
 }
 
 private fun LazyListScope.sharedChapterItems(
