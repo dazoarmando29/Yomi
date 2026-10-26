@@ -393,16 +393,16 @@
     <!-- Extension repos -->
 
     <!-- Extension store -->
-    <string name="extensionStores">Extension stores</string>
-    <string name="action.addExtensionStore">Add extension store</string>
-    <string name="extensionStoresScreen.emptyLabel">You haven\'t added an extension store yet</string>
-    <string name="extensionStoresScreen.addStore.title">Add extension store</string>
-    <string name="extensionStoresScreen.addStore.alreadyExists">This extension store already exists</string>
+    <string name="extensionStores">Extension repositories</string>
+    <string name="action.addExtensionStore">Add extension repository</string>
+    <string name="extensionStoresScreen.emptyLabel">You haven\'t added an extension repository yet.\n\nExtension repositories are third-party providers of source extensions. Only add repositories you trust, for example the community Keiyoushi repository: https://keiyoushi.github.io/extensions/</string>
+    <string name="extensionStoresScreen.addStore.title">Add extension repository</string>
+    <string name="extensionStoresScreen.addStore.alreadyExists">This extension repository already exists</string>
     <string name="extensionStoresScreen.addStore.processing">Processing…</string>
-    <string name="extensionStoresScreen.addStoreInput.inputLabel">Store index URL</string>
-    <string name="extensionStoresScreen.addStoreDeeplink.bodyText">Do you wish to add the extension store below?</string>
-    <string name="extensionStoresScreen.deleteStore.title">Remove extension store</string>
-    <string name="extensionStoresScreen.deleteStore.body">Do you wish to remove the extension store \"%1$s\" (%2$s)?</string>
+    <string name="extensionStoresScreen.addStoreInput.inputLabel">Repository index URL</string>
+    <string name="extensionStoresScreen.addStoreDeeplink.bodyText">Do you wish to add the extension repository below?</string>
+    <string name="extensionStoresScreen.deleteStore.title">Remove extension repository</string>
+    <string name="extensionStoresScreen.deleteStore.body">Do you wish to remove the extension repository \"%1$s\" (%2$s)?</string>
 
       <!-- Reader section -->
     <string name="pref_fullscreen">Fullscreen</string>
@@ -599,6 +599,9 @@
     <string name="yomi_backup_stats_history">%1$d history records</string>
     <string name="yomi_backup_stats_tracking">%1$d tracker entries</string>
     <string name="yomi_backup_resume_note">After importing, Yomi resumes at the last chapter and page you were reading. Entries with missing sources are preserved and can be migrated manually.</string>
+    <string name="yomi_find_extension">Find extension</string>
+    <string name="yomi_find_extensions">Find missing extensions</string>
+    <string name="yomi_missing_extensions_hint">Missing sources stay in your library with their reading history. Install compatible extensions from repositories you have added and trusted, then reopen the manga to continue.</string>
     <string name="pref_backup_interval">Automatic backup frequency</string>
     <string name="action_create">Create</string>
     <string name="backup_created">Backup created</string>
@@ -751,7 +754,7 @@
     <string name="action_global_search_query">Search for \"%1$s\" globally</string>
     <string name="latest">Latest</string>
     <string name="popular">Popular</string>
-    <string name="browse">Browse</string>
+    <string name="browse">Discover</string>
     <string name="has_results">Has results</string>
     <string name="local_source_help_guide">Local source guide</string>
     <string name="no_pinned_sources">You have no pinned sources</string>

@@ -43,6 +43,7 @@ import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.ui.browse.extension.details.SourcePreferencesScreen
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceViewModel.Listing
 import eu.kanade.tachiyomi.ui.category.CategoryScreen
+import eu.kanade.tachiyomi.ui.home.HomeScreen
 import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.ui.webview.WebViewScreen
 import kotlinx.coroutines.Dispatchers
@@ -97,9 +98,16 @@ data class BrowseSourceScreen(
         }
 
         if (source is StubSource) {
+            val findExtensionScope = rememberCoroutineScope()
             MissingSourceScreen(
                 source = source,
                 navigateUp = navigateUp,
+                onFindExtension = {
+                    navigator.popUntilRoot()
+                    findExtensionScope.launch {
+                        HomeScreen.openTab(HomeScreen.Tab.Browse(toExtensions = true))
+                    }
+                },
             )
             return
         }

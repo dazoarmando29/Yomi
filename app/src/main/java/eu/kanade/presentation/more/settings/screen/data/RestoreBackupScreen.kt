@@ -9,10 +9,12 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -39,6 +41,7 @@ import eu.kanade.tachiyomi.data.backup.BackupImportInspector
 import eu.kanade.tachiyomi.data.backup.BackupImportSummary
 import eu.kanade.tachiyomi.data.backup.restore.BackupRestoreWorker
 import eu.kanade.tachiyomi.data.backup.restore.RestoreOptions
+import eu.kanade.tachiyomi.ui.home.HomeScreen
 import eu.kanade.tachiyomi.util.system.DeviceUtil
 import eu.kanade.tachiyomi.util.system.workManager
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +64,7 @@ class RestoreBackupScreen(
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val scope = rememberCoroutineScope()
         val viewModel =
             assistedMetroViewModel<RestoreBackupViewModel, RestoreBackupViewModel.Factory> { create(uri = uri) }
         val state by viewModel.state.collectAsState()
@@ -111,7 +115,15 @@ class RestoreBackupScreen(
                 }
 
                 if (state.error != null) {
-                    errorMessageItem(state.error)
+                    errorMessageItem(
+                        error = state.error,
+                        onFindExtensions = {
+                            navigator.popUntilRoot()
+                            scope.launch {
+                                HomeScreen.openTab(HomeScreen.Tab.Browse(toExtensions = true))
+                            }
+                        },
+                    )
                 }
             }
         }
@@ -230,6 +242,7 @@ class RestoreBackupScreen(
 
     private fun LazyListScope.errorMessageItem(
         error: Any?,
+        onFindExtensions: () -> Unit,
     ) {
         item {
             SectionCard {
@@ -287,6 +300,16 @@ class RestoreBackupScreen(
 
                     SelectionContainer {
                         Text(text = msg)
+                    }
+
+                    if (error is MissingRestoreComponents && error.sources.isNotEmpty()) {
+                        Text(
+                            text = stringResource(MR.strings.yomi_missing_extensions_hint),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        TextButton(onClick = onFindExtensions) {
+                            Text(stringResource(MR.strings.yomi_find_extensions))
+                        }
                     }
                 }
             }

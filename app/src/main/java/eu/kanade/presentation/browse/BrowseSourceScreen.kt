@@ -23,6 +23,7 @@ import mihon.icons.materialsymbols.MaterialSymbols
 import mihon.icons.materialsymbols.automirroredrounded.Help
 import mihon.icons.materialsymbols.rounded.Public
 import mihon.icons.materialsymbols.rounded.Refresh
+import mihon.icons.materialsymbols.rounded.Search
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.domain.library.model.LibraryDisplayMode
 import tachiyomi.domain.manga.model.Manga
@@ -150,6 +151,7 @@ fun BrowseSourceContent(
 internal fun MissingSourceScreen(
     source: StubSource,
     navigateUp: () -> Unit,
+    onFindExtension: () -> Unit,
 ) {
     Scaffold(
         topBar = { scrollBehavior ->
@@ -163,6 +165,13 @@ internal fun MissingSourceScreen(
         EmptyScreen(
             message = stringResource(MR.strings.source_not_installed, source.toString()),
             modifier = Modifier.padding(paddingValues),
+            actions = listOf(
+                EmptyScreenAction(
+                    stringRes = MR.strings.yomi_find_extension,
+                    icon = MaterialSymbols.Rounded.Search,
+                    onClick = onFindExtension,
+                ),
+            ),
         )
     }
 }
