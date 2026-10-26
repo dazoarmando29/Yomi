@@ -35,6 +35,7 @@ import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.network.NetworkPreferences
 import eu.kanade.tachiyomi.smartsource.SourceHealthWorker
 import eu.kanade.tachiyomi.smartsource.SmartSourcePreferences
+import eu.kanade.tachiyomi.smartupdate.SmartUpdatePreferences
 import eu.kanade.tachiyomi.ui.base.delegate.SecureActivityDelegateImpl
 import eu.kanade.tachiyomi.ui.main.MainActivity
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
@@ -91,6 +92,7 @@ interface AppGraph : ViewModelGraph {
     val libraryPreferences: LibraryPreferences
     val sourcePreferences: SourcePreferences
     val smartSourcePreferences: SmartSourcePreferences
+    val smartUpdatePreferences: SmartUpdatePreferences
     val trackPreferences: TrackPreferences
     val backupPreferences: BackupPreferences
     val storagePreferences: StoragePreferences

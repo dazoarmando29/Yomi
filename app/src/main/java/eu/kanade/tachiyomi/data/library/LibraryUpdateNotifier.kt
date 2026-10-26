@@ -180,7 +180,7 @@ class LibraryUpdateNotifier(
      *
      * @param updates a list of manga with new updates.
      */
-    suspend fun showUpdateNotifications(updates: List<Pair<Manga, Array<Chapter>>>) {
+    suspend fun showUpdateNotifications(updates: List<Pair<Manga, Array<Chapter>>>, silent: Boolean = false) {
         // Parent group notification
         context.notify(
             Notifications.ID_NEW_CHAPTERS,
@@ -219,6 +219,7 @@ class LibraryUpdateNotifier(
 
             setContentIntent(getNotificationIntent())
             setAutoCancel(true)
+            setSilent(silent)
         }
 
         // Per-manga notification
@@ -227,14 +228,14 @@ class LibraryUpdateNotifier(
                 updates.map { (manga, chapters) ->
                     NotificationManagerCompat.NotificationWithIdAndTag(
                         manga.id.hashCode(),
-                        createNewChaptersNotification(manga, chapters),
+                        createNewChaptersNotification(manga, chapters, silent),
                     )
                 },
             )
         }
     }
 
-    private suspend fun createNewChaptersNotification(manga: Manga, chapters: Array<Chapter>): Notification {
+    private suspend fun createNewChaptersNotification(manga: Manga, chapters: Array<Chapter>, silent: Boolean = false): Notification {
         val icon = getMangaIcon(manga)
         return context.notificationBuilder(Notifications.CHANNEL_NEW_CHAPTERS) {
             setContentTitle(manga.title)
@@ -256,6 +257,7 @@ class LibraryUpdateNotifier(
             // Open first chapter on tap
             setContentIntent(NotificationReceiver.openChapterPendingActivity(context, manga, chapters.first()))
             setAutoCancel(true)
+            setSilent(silent)
 
             // Mark chapters as read action
             addAction(

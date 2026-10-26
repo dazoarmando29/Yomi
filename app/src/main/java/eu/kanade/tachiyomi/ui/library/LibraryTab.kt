@@ -29,6 +29,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.library.DeleteLibraryMangaDialog
 import eu.kanade.presentation.library.LibrarySettingsDialog
+import eu.kanade.presentation.library.UpdateStatusScreen
 import eu.kanade.presentation.library.components.LibraryContent
 import eu.kanade.presentation.library.components.LibraryToolbar
 import eu.kanade.presentation.manga.components.LibraryBottomActionMenu
@@ -123,6 +124,7 @@ data object LibraryTab : Tab {
                     onClickFilter = viewModel::showSettingsDialog,
                     onClickRefresh = { scope.launch { onClickRefresh(state.activeCategory) } },
                     onClickGlobalUpdate = { scope.launch { onClickRefresh(null) } },
+                    onClickUpdateStatus = { navigator.push(UpdateStatusScreen()) },
                     onClickOpenRandomManga = {
                         scope.launch {
                             val randomItem = viewModel.getRandomLibraryItemForCurrentCategory()

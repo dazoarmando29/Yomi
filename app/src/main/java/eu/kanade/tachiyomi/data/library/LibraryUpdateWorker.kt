@@ -22,6 +22,16 @@ import androidx.work.workDataOf
 import dev.zacsweers.metro.Inject
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.notification.Notifications
+import eu.kanade.tachiyomi.smartsource.health.SourceHealthStore
+import eu.kanade.tachiyomi.smartsource.model.HealthRecord
+import eu.kanade.tachiyomi.smartsource.model.HealthStatus
+import eu.kanade.tachiyomi.smartupdate.LibraryUpdateStateStore
+import eu.kanade.tachiyomi.smartupdate.MangaUpdateFacts
+import eu.kanade.tachiyomi.smartupdate.RetryPolicy
+import eu.kanade.tachiyomi.smartupdate.SmartUpdatePreferences
+import eu.kanade.tachiyomi.smartupdate.UpdateEligibilityEngine
+import eu.kanade.tachiyomi.smartupdate.UpdateEvent
+import eu.kanade.tachiyomi.smartupdate.UpdateMode
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import eu.kanade.tachiyomi.util.storage.getUriCompat
@@ -97,6 +107,12 @@ class LibraryUpdateWorker(private val context: Context, workerParams: WorkerPara
     @Inject private lateinit var getManga: GetManga
 
     @Inject private lateinit var fetchInterval: FetchInterval
+
+    @Inject private lateinit var smartUpdatePreferences: SmartUpdatePreferences
+
+    private val updateStateStore by lazy { LibraryUpdateStateStore(context) }
+
+    private val sourceHealthStore by lazy { SourceHealthStore(context) }
 
     @Inject private lateinit var filterChaptersForDownload: FilterChaptersForDownload
 
@@ -188,29 +204,75 @@ class LibraryUpdateWorker(private val context: Context, workerParams: WorkerPara
             Clock.System.now().toLocalDateTime(timeZone).date,
             timeZone,
         ).endInclusive
+        val mode = smartUpdatePreferences.mode()
+        val nowMillis = System.currentTimeMillis()
+        val fetchWindowEndMillis = fetchWindowUpperBound.toEpochMilliseconds()
 
         mangaToUpdate = listToUpdate
             .filter {
                 when {
+                    mode != UpdateMode.SMART -> {
+                        val facts = MangaUpdateFacts(
+                            mangaId = it.manga.id,
+                            title = it.manga.title,
+                            isCompleted = it.manga.status.toInt() == SManga.COMPLETED,
+                            totalChapters = it.totalChapters,
+                            readCount = it.readCount,
+                            nextUpdateAt = it.manga.nextUpdate?.toEpochMilliseconds(),
+                            onlyFetchOnce = it.manga.updateStrategy == UpdateStrategy.ONLY_FETCH_ONCE,
+                        )
+                        val record = updateStateStore.get(it.manga.id)
+                        val eligibility = UpdateEligibilityEngine.evaluate(
+                            mode = mode,
+                            facts = facts,
+                            record = record,
+                            now = nowMillis,
+                            fetchWindowEnd = fetchWindowEndMillis,
+                            thoroughIncludeCompleted = smartUpdatePreferences.thoroughIncludeCompleted.get(),
+                        )
+                        if (!eligibility.eligible) {
+                            val text = skipReasonText(eligibility.reason)
+                            skippedUpdates.add(it.manga to text)
+                            updateStateStore.update(it.manga.id, it.manga.title) { r ->
+                                r.afterSkip(nowMillis, eligibility.reason)
+                            }
+                            false
+                        } else {
+                            true
+                        }
+                    }
+
                     it.manga.updateStrategy == UpdateStrategy.ONLY_FETCH_ONCE && it.totalChapters > 0L -> {
                         skippedUpdates.add(
                             it.manga to context.stringResource(MR.strings.skipped_reason_not_always_update),
                         )
+                        updateStateStore.update(it.manga.id, it.manga.title) { r ->
+                            r.afterSkip(nowMillis, UpdateEligibilityEngine.REASON_ONLY_FETCH_ONCE)
+                        }
                         false
                     }
 
                     MANGA_NON_COMPLETED in restrictions && it.manga.status.toInt() == SManga.COMPLETED -> {
                         skippedUpdates.add(it.manga to context.stringResource(MR.strings.skipped_reason_completed))
+                        updateStateStore.update(it.manga.id, it.manga.title) { r ->
+                            r.afterSkip(nowMillis, UpdateEligibilityEngine.REASON_COMPLETED)
+                        }
                         false
                     }
 
                     MANGA_HAS_UNREAD in restrictions && it.unreadCount != 0L -> {
                         skippedUpdates.add(it.manga to context.stringResource(MR.strings.skipped_reason_not_caught_up))
+                        updateStateStore.update(it.manga.id, it.manga.title) { r ->
+                            r.afterSkip(nowMillis, UpdateEligibilityEngine.REASON_NOT_CAUGHT_UP)
+                        }
                         false
                     }
 
                     MANGA_NON_READ in restrictions && it.totalChapters > 0L && !it.hasStarted -> {
                         skippedUpdates.add(it.manga to context.stringResource(MR.strings.skipped_reason_not_started))
+                        updateStateStore.update(it.manga.id, it.manga.title) { r ->
+                            r.afterSkip(nowMillis, UpdateEligibilityEngine.REASON_NOT_STARTED)
+                        }
                         false
                     }
 
@@ -219,6 +281,9 @@ class LibraryUpdateWorker(private val context: Context, workerParams: WorkerPara
                         skippedUpdates.add(
                             it.manga to context.stringResource(MR.strings.skipped_reason_not_in_release_period),
                         )
+                        updateStateStore.update(it.manga.id, it.manga.title) { r ->
+                            r.afterSkip(nowMillis, UpdateEligibilityEngine.REASON_NOT_IN_RELEASE_PERIOD)
+                        }
                         false
                     }
 
@@ -282,6 +347,20 @@ class LibraryUpdateWorker(private val context: Context, workerParams: WorkerPara
                                         val newChapters = updateManga(manga, fetchWindow)
                                             .sortedByDescending { it.sourceOrder }
 
+                                        val successAt = System.currentTimeMillis()
+                                        updateStateStore.update(manga.id, manga.title) {
+                                            it.afterSuccess(successAt, newChapters.size)
+                                        }
+                                        updateStateStore.recordEvent(
+                                            UpdateEvent(
+                                                mangaId = manga.id,
+                                                title = manga.title,
+                                                at = successAt,
+                                                success = true,
+                                                newChapters = newChapters.size,
+                                            ),
+                                        )
+
                                         if (newChapters.isNotEmpty()) {
                                             val chaptersToDownload = filterChaptersForDownload.await(manga, newChapters)
 
@@ -310,6 +389,39 @@ class LibraryUpdateWorker(private val context: Context, workerParams: WorkerPara
                                             else -> e.message
                                         }
                                         failedUpdates.add(manga to errorMessage)
+
+                                        val failureAt = System.currentTimeMillis()
+                                        val previous = updateStateStore.get(manga.id)
+                                        val classification = RetryPolicy.classify(e)
+                                        val permanent = RetryPolicy.isPermanent(classification.status)
+                                        val nextEligible = if (permanent) {
+                                            Long.MAX_VALUE
+                                        } else {
+                                            failureAt + RetryPolicy.backoffMillis(
+                                                previous.consecutiveFailures,
+                                                jitterSeed = failureAt,
+                                            )
+                                        }
+                                        updateStateStore.update(manga.id, manga.title) {
+                                            it.afterFailure(failureAt, errorMessage ?: classification.reason, nextEligible)
+                                        }
+                                        updateStateStore.recordEvent(
+                                            UpdateEvent(
+                                                mangaId = manga.id,
+                                                title = manga.title,
+                                                at = failureAt,
+                                                success = false,
+                                                detail = errorMessage ?: classification.reason,
+                                            ),
+                                        )
+
+                                        if (permanent || previous.consecutiveFailures + 1 >= 3) {
+                                            sourceHealthStore.recordFailure(
+                                                key = HealthRecord.sourceKey(manga.source),
+                                                now = failureAt,
+                                                classification = classification,
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -322,7 +434,15 @@ class LibraryUpdateWorker(private val context: Context, workerParams: WorkerPara
         notifier.cancelProgressNotification()
 
         if (newUpdates.isNotEmpty()) {
-            notifier.showUpdateNotifications(newUpdates)
+            val hour = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).hour
+            val silent = smartUpdatePreferences.isQuietHours(hour)
+            val fresh = newUpdates.map { (manga, chapters) ->
+                val freshUrls = updateStateStore.markChaptersNotified(manga.id, chapters.map { it.url }).toSet()
+                manga to chapters.filter { it.url in freshUrls }.toTypedArray()
+            }.filter { it.second.isNotEmpty() }
+            if (fresh.isNotEmpty() && smartUpdatePreferences.notifyNewChapters.get()) {
+                notifier.showUpdateNotifications(fresh, silent = silent)
+            }
             if (hasDownloads.load()) {
                 downloadManager.startDownloads()
             }
@@ -341,6 +461,26 @@ class LibraryUpdateWorker(private val context: Context, workerParams: WorkerPara
         // We don't want to start downloading while the library is updating, because websites
         // may don't like it and they could ban the user.
         downloadManager.downloadChapters(manga, chapters, false)
+    }
+
+    private fun skipReasonText(reason: String): String = when (reason) {
+        UpdateEligibilityEngine.REASON_ONLY_FETCH_ONCE ->
+            context.stringResource(MR.strings.skipped_reason_not_always_update)
+        UpdateEligibilityEngine.REASON_COMPLETED ->
+            context.stringResource(MR.strings.skipped_reason_completed)
+        UpdateEligibilityEngine.REASON_NOT_CAUGHT_UP ->
+            context.stringResource(MR.strings.skipped_reason_not_caught_up)
+        UpdateEligibilityEngine.REASON_NOT_STARTED ->
+            context.stringResource(MR.strings.skipped_reason_not_started)
+        UpdateEligibilityEngine.REASON_NOT_IN_RELEASE_PERIOD ->
+            context.stringResource(MR.strings.skipped_reason_not_in_release_period)
+        UpdateEligibilityEngine.REASON_RETRY_BACKOFF ->
+            context.stringResource(MR.strings.yomi_skip_retry_backoff)
+        UpdateEligibilityEngine.REASON_PERMANENT_FAILURE ->
+            context.stringResource(MR.strings.yomi_skip_permanent_failure)
+        UpdateEligibilityEngine.REASON_RECENTLY_CHECKED ->
+            context.stringResource(MR.strings.yomi_skip_recently_checked)
+        else -> reason
     }
 
     /**
