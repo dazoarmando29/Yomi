@@ -395,7 +395,7 @@
     <!-- Extension store -->
     <string name="extensionStores">Extension repositories</string>
     <string name="action.addExtensionStore">Add extension repository</string>
-    <string name="extensionStoresScreen.emptyLabel">You haven\'t added an extension repository yet.\n\nExtension repositories are third-party providers of source extensions. Only add repositories you trust, for example the community Keiyoushi repository: https://keiyoushi.github.io/extensions/</string>
+    <string name="extensionStoresScreen.emptyLabel">You haven\'t added an extension repository yet.\n\nExtension repositories are third-party providers of source extensions. Only add repositories you trust:\n\nKeiyoushi: https://github.com/keiyoushi/extensions/raw/repo/index.pb\nYuzono: https://github.com/yuzono/manga-repo/raw/repo/repo.json\nManti-X: https://github.com/manti-X/extensions/raw/repo/index.pb</string>
     <string name="extensionStoresScreen.addStore.title">Add extension repository</string>
     <string name="extensionStoresScreen.addStore.alreadyExists">This extension repository already exists</string>
     <string name="extensionStoresScreen.addStore.processing">Processing…</string>
