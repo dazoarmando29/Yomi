@@ -35,8 +35,8 @@ class SeedExtensionRepositoriesMigration(
         return@withContext true
     }
 
-    private companion object {
-        val SEEDED_REPOSITORIES = listOf(
+    internal companion object {
+        internal val SEEDED_REPOSITORIES = listOf(
             "https://github.com/keiyoushi/extensions/raw/repo/index.pb" to "Keiyoushi",
             "https://github.com/yuzono/manga-repo/raw/repo/repo.json" to "Yuzono",
             "https://github.com/manti-X/extensions/raw/repo/index.pb" to "Manti-X",
