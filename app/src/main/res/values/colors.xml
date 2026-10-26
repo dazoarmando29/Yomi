@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash">@color/accent_blue</color>
+    <color name="splash">#16151A</color>
 
-    <color name="accent_blue">#0058A0</color>
-    <color name="icon_background">#FAFAFA</color>
+    <color name="accent_yomi">#8A72E8</color>
+    <color name="icon_background">#1F1D24</color>
 </resources>

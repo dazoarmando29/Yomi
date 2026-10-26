@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Mihon</string>
+    <string name="app_name" translatable="false">Yomi</string>
 
     <!-- Generic strings -->
     <string name="on">On</string>
@@ -36,7 +36,7 @@
     <string name="label_extensions">Extensions</string>
     <string name="label_extension_info">Extension info</string>
     <string name="label_help">Help</string>
-    <string name="label_support_us">Support Us</string>
+    <string name="label_support_us">Support Mihon</string>
     <string name="label_default">Default</string>
     <string name="label_warning">Warning</string>
     <string name="label_auto">Auto</string>
@@ -679,6 +679,8 @@
     <string name="licenses">Open source licenses</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="check_for_updates">Check for updates</string>
+    <string name="yomi_upstream_title">Based on Mihon</string>
+    <string name="yomi_upstream_summary">Yomi is a fork of the Mihon project, licensed under Apache 2.0. Upstream project credits are preserved.</string>
 
     <!-- ACRA -->
     <string name="pref_enable_acra">Send crash reports</string>

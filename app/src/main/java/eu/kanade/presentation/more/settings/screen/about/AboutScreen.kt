@@ -110,6 +110,14 @@ object AboutScreen : Screen() {
                     )
                 }
 
+                item {
+                    TextPreferenceWidget(
+                        title = stringResource(MR.strings.yomi_upstream_title),
+                        subtitle = stringResource(MR.strings.yomi_upstream_summary),
+                        onPreferenceClick = { uriHandler.openUri("https://github.com/mihonapp/mihon") },
+                    )
+                }
+
                 if (updaterEnabled) {
                     item {
                         TextPreferenceWidget(
