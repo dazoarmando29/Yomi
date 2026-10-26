@@ -109,8 +109,63 @@ When an imported backup references sources whose extensions are not installed, Y
 3. Install your preferred manga source extensions (Discover → Extensions).
 4. Import your Mihon backup (Settings → Backup & Restore → Import Mihon backup).
 5. Review the preview, restore, and check the summary notification for failed items.
-6. Open a manga — it resumes at your last read chapter and page.
+6. Open a manga — it resumes at your last chapter and page.
 7. Download authorized chapters for offline reading as usual.
+
+## Smart Source Manager
+
+Yomi-exclusive stability layer (Settings → **Smart Source Manager**). It keeps Mihon's
+extension security model intact — nothing is auto-installed, auto-trusted, or auto-migrated.
+
+### What it does today (Phases A–E core)
+
+- **Extension update reliability (Phase A)**: transient download failures retry with
+  exponential backoff (3 attempts); failures surface human-readable reasons on the
+  Extensions screen (HTTP errors, timeouts, signature mismatches, system-installer results).
+  A failed update always leaves the installed extension untouched.
+- **Health monitoring (Phase B)**: background checks via WorkManager (manual/daily/weekly,
+  network-required, battery-aware) record per-extension, per-repository, and per-source
+  health locally: `HEALTHY`, `UPDATE AVAILABLE`, `TEMPORARILY UNAVAILABLE`,
+  `AUTHENTICATION REQUIRED`, `OUTDATED`, `INCOMPATIBLE`, `REPOSITORY MISSING`, `BROKEN`,
+  `UNKNOWN`. One failure never marks anything broken — status escalates only after
+  repeated failures (default threshold 4) with exponential backoff between attempts.
+  Problem summaries arrive as a notification ("N extensions or repositories are
+  experiencing problems..."). Health history never leaves your device.
+- **Replacement ranking (Phase C)**: an explainable weighted model (identity 35%,
+  chapter coverage 25%, source reliability 20%, update recency 10%, language 10%) with
+  per-factor explanations and strict confidence tiers. High confidence requires a strong
+  identity match (fuzzy+normalized titles, author, year, description) — a title similarity
+  alone never promotes a match, and author mismatches demote it. When nothing is verified,
+  the recommendation is "No reliable match found" instead of a guess.
+- **Intelligent chapter matching (Phase D)**: migration maps chapters by normalized
+  chapter numbers (incl. fractional), normalized titles, and duplicates — never by index.
+  Read state transfers only to chapters actually read; page progress transfers only on
+  exact number matches; unmatched progress is reported rather than faked.
+  `MigrateMangaUseCase` now also preserves **reading history** (previously dropped) and
+  page progress on exact matches when migrating.
+- **Migration safety (Phase E)**: JSON snapshots of manga state (categories, notes,
+  chapters, history) are stored locally before migration and can be restored. Original
+  records are never deleted before verification; downloads are untouched.
+
+### Smart migration workflow
+
+Library (select manga) → Migrate, or a broken source's "Find extension" action:
+
+1. Detect affected manga and collect candidates from enabled sources and approved repositories.
+2. Rank candidates with the weighted model and split exact vs uncertain matches.
+3. Preview: chapter-by-chapter mapping, progress-transfer report, resume position.
+4. Explicit confirmation; a single confirmation may cover multiple verified titles.
+5. Migrate in a managed queue with snapshots taken first; retry failures; restore on request.
+
+### Not yet implemented (honest status)
+
+- Persistent cross-source manga identity and multi-source-per-manga continuity (Phase F):
+  intentionally deferred until the migration pipeline is validated on devices.
+- Automatic fallback switching between sources: not implemented (would be opt-in only).
+- The recommendation engine is implemented and unit-tested; wiring live candidate search
+  into the one-tap bulk-migration preview UI is partially done — matching, ranking, and
+  planning run against deterministic fixtures in tests; a device run against real sources
+  is recommended before relying on it.
 
 ## Development requirements
 
