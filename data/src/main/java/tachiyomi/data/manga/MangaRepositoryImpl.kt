@@ -228,6 +228,14 @@ class MangaRepositoryImpl(
         }
     }
 
+    override suspend fun setPinned(id: Long, pinned: Boolean) {
+        database.mangaQueries.setPinned(id = id, pinned = pinned)
+    }
+
+    override suspend fun getPinnedIds(): Set<Long> {
+        return database.mangaQueries.getPinnedIds().executeAsList().toSet()
+    }
+
     override suspend fun updateRemote(update: MangaRemoteUpdate): Boolean {
         return try {
             database.mangaQueries.updateRemote(

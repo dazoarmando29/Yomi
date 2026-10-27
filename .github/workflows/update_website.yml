@@ -9,6 +9,10 @@ on:
 
 jobs:
   update_website:
+    # Upstream Mihon infrastructure: dispatches to mihonapp/website with a bot
+    # token this fork does not have. Skip outside the upstream repository so it
+    # cannot fail every release here.
+    if: github.repository == 'mihonapp/mihon'
     runs-on: 'ubuntu-26.04'
 
     steps:

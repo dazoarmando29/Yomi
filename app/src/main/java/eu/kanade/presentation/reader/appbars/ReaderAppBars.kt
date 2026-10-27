@@ -1,6 +1,8 @@
 package eu.kanade.presentation.reader.appbars
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -79,11 +81,30 @@ fun ReaderAppBars(
         .surfaceColorAtElevation(3.dp)
         .copy(alpha = if (isSystemInDarkTheme()) 0.9f else 0.95f)
 
+    val reduceMotionContext = androidx.compose.ui.platform.LocalContext.current
+    val reduceMotion = androidx.compose.runtime.remember(reduceMotionContext) {
+        runCatching {
+            android.provider.Settings.Global.getFloat(
+                reduceMotionContext.contentResolver,
+                android.provider.Settings.Global.ANIMATOR_DURATION_SCALE,
+                1f,
+            ) == 0f
+        }.getOrDefault(false)
+    }
+
     Column(modifier = Modifier.fillMaxHeight()) {
         AnimatedVisibility(
             visible = visible,
-            enter = slideInVertically(readerBarsSlideAnimationSpec) { -it } + fadeIn(readerBarsFadeAnimationSpec),
-            exit = slideOutVertically(readerBarsSlideAnimationSpec) { -it } + fadeOut(readerBarsFadeAnimationSpec),
+            enter = if (reduceMotion) {
+                EnterTransition.None
+            } else {
+                slideInVertically(readerBarsSlideAnimationSpec) { -it } + fadeIn(readerBarsFadeAnimationSpec)
+            },
+            exit = if (reduceMotion) {
+                ExitTransition.None
+            } else {
+                slideOutVertically(readerBarsSlideAnimationSpec) { -it } + fadeOut(readerBarsFadeAnimationSpec)
+            },
         ) {
             ReaderTopBar(
                 modifier = Modifier
@@ -108,10 +129,18 @@ fun ReaderAppBars(
                 Row(modifier = Modifier.weight(1f)) {
                     AnimatedVisibility(
                         visible = visible,
-                        enter = slideInHorizontally(readerBarsSlideAnimationSpec) { if (sliderOnLeft) -it else it } +
-                            fadeIn(readerBarsFadeAnimationSpec),
-                        exit = slideOutHorizontally(readerBarsSlideAnimationSpec) { if (sliderOnLeft) -it else it } +
-                            fadeOut(readerBarsFadeAnimationSpec),
+                        enter = if (reduceMotion) {
+                            EnterTransition.None
+                        } else {
+                            slideInHorizontally(readerBarsSlideAnimationSpec) { if (sliderOnLeft) -it else it } +
+                                fadeIn(readerBarsFadeAnimationSpec)
+                        },
+                        exit = if (reduceMotion) {
+                            ExitTransition.None
+                        } else {
+                            slideOutHorizontally(readerBarsSlideAnimationSpec) { if (sliderOnLeft) -it else it } +
+                                fadeOut(readerBarsFadeAnimationSpec)
+                        },
                     ) {
                         Row {
                             Spacer(modifier = Modifier.width(MaterialTheme.padding.small))

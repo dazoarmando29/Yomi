@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import eu.kanade.tachiyomi.ui.library.LibraryItem
 import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.manga.model.MangaCover
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 
 @Composable
 internal fun LibraryComfortableGrid(
@@ -33,6 +35,15 @@ internal fun LibraryComfortableGrid(
             contentType = { "library_comfortable_grid_item" },
         ) { libraryItem ->
             val manga = libraryItem.libraryManga.manga
+            val progress = libraryItem.libraryManga.let {
+                if (it.hasStarted && it.totalChapters > 0) {
+                    (it.readCount.toFloat() / it.totalChapters).coerceIn(0f, 1f)
+                } else {
+                    null
+                }
+            }
+            val recentlyUpdated = libraryItem.libraryManga.chapterFetchedAt
+                ?.let { fetchedAt -> Clock.System.now() - fetchedAt < 7.days } == true
             MangaComfortableGridItem(
                 isSelected = manga.id in selection,
                 title = manga.title,
@@ -43,9 +54,11 @@ internal fun LibraryComfortableGrid(
                     url = manga.thumbnailUrl,
                     lastModified = manga.coverLastModified,
                 ),
+                readingProgress = progress,
                 coverBadgeStart = {
                     DownloadsBadge(count = libraryItem.badges.downloadCount)
                     UnreadBadge(count = libraryItem.badges.unreadCount)
+                    if (recentlyUpdated) RecentBadge()
                 },
                 coverBadgeEnd = {
                     LanguageBadge(

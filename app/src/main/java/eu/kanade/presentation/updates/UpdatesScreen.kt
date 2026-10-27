@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import mihon.icons.materialsymbols.MaterialSymbols
 import mihon.icons.materialsymbols.rounded.CalendarMonth
+import mihon.icons.materialsymbols.rounded.DoneAll
 import mihon.icons.materialsymbols.rounded.FilterList
 import mihon.icons.materialsymbols.rounded.FlipToBack
 import mihon.icons.materialsymbols.rounded.Refresh
@@ -76,6 +77,7 @@ fun UpdateScreen(
                 onCalendarClicked = { onCalendarClicked() },
                 onUpdateLibrary = { scope.launch { onUpdateLibrary() } },
                 onFilterClicked = { onFilterClicked() },
+                onMarkAllRead = { onMultiMarkAsReadClicked(state.items, true) },
                 hasFilters = hasActiveFilters,
                 actionModeCounter = state.selected.size,
                 onSelectAll = { onSelectAll(true) },
@@ -157,6 +159,7 @@ private fun UpdatesAppBar(
     onCalendarClicked: () -> Unit,
     onUpdateLibrary: () -> Unit,
     onFilterClicked: () -> Unit,
+    onMarkAllRead: () -> Unit,
     hasFilters: Boolean,
     // For action mode
     actionModeCounter: Int,
@@ -172,6 +175,11 @@ private fun UpdatesAppBar(
         actions = {
             AppBarActions(
                 listOf(
+                    AppBar.Action(
+                        title = stringResource(MR.strings.yomi_mark_all_read),
+                        icon = MaterialSymbols.Rounded.DoneAll,
+                        onClick = onMarkAllRead,
+                    ),
                     AppBar.Action(
                         title = stringResource(MR.strings.action_filter),
                         icon = MaterialSymbols.Rounded.FilterList,

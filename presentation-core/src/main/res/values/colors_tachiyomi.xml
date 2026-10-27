@@ -1,28 +1,28 @@
 <!--
-  ~ Yomi default theme (light)
-  ~ Deep charcoal neutrals with subtle purple accents
+  ~ Yomi premium design tokens (light)
+  ~ Violet accent on soft neutral surfaces, cyan secondary
 -->
 <resources>
-    <color name="tachiyomi_primary">#6750A4</color>
+    <color name="tachiyomi_primary">#6D3BD7</color>
     <color name="tachiyomi_onPrimary">#FFFFFF</color>
     <color name="tachiyomi_primaryContainer">#EADDFF</color>
-    <color name="tachiyomi_onPrimaryContainer">#21005D</color>
+    <color name="tachiyomi_onPrimaryContainer">#23005C</color>
     <color name="tachiyomi_inversePrimary">#D0BCFF</color>
-    <color name="tachiyomi_secondary">#6750A4</color>
+    <color name="tachiyomi_secondary">#006B7E</color>
     <color name="tachiyomi_onSecondary">#FFFFFF</color>
-    <color name="tachiyomi_secondaryContainer">#E9DDFF</color>
-    <color name="tachiyomi_onSecondaryContainer">#24005A</color>
-    <color name="tachiyomi_tertiary">#3F6E4F</color>
+    <color name="tachiyomi_secondaryContainer">#B4ECFA</color>
+    <color name="tachiyomi_onSecondaryContainer">#002E36</color>
+    <color name="tachiyomi_tertiary">#004395</color>
     <color name="tachiyomi_onTertiary">#FFFFFF</color>
-    <color name="tachiyomi_tertiaryContainer">#C0F0CE</color>
-    <color name="tachiyomi_onTertiaryContainer">#00210D</color>
+    <color name="tachiyomi_tertiaryContainer">#D8E2FF</color>
+    <color name="tachiyomi_onTertiaryContainer">#001A42</color>
     <color name="tachiyomi_background">#F9F7FC</color>
     <color name="tachiyomi_onBackground">#1C1B20</color>
     <color name="tachiyomi_surface">#F9F7FC</color>
     <color name="tachiyomi_onSurface">#1C1B20</color>
     <color name="tachiyomi_surfaceVariant">#E7E0EC</color>
     <color name="tachiyomi_onSurfaceVariant">#49454F</color>
-    <color name="tachiyomi_surfaceTint">#6750A4</color>
+    <color name="tachiyomi_surfaceTint">#6D3BD7</color>
     <color name="tachiyomi_inverseSurface">#313033</color>
     <color name="tachiyomi_inverseOnSurface">#F1ECF5</color>
     <color name="tachiyomi_error">#BA1A1A</color>

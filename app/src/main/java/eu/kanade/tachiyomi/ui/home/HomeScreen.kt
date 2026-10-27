@@ -64,6 +64,7 @@ object HomeScreen : Screen() {
     private const val TabNavigatorKey = "HomeTabs"
 
     private val TABS = listOf(
+        HomeDashboardTab,
         LibraryTab,
         UpdatesTab,
         HistoryTab,
@@ -104,6 +105,8 @@ object HomeScreen : Screen() {
                     navigationSuiteColors = NavigationSuiteDefaults.colors(
                         navigationRailContainerColor = MaterialTheme.colorScheme
                             .surfaceColorAtElevation(3.dp),
+                        navigationBarContainerColor = MaterialTheme.colorScheme.surfaceContainer
+                            .copy(alpha = 0.97f),
                     ),
                     navigationItemVerticalArrangement = Arrangement.Center,
                     navigationItems = {
@@ -141,6 +144,7 @@ object HomeScreen : Screen() {
                 launch {
                     openTabEvent.receiveAsFlow().collectLatest {
                         tabNavigator.current = when (it) {
+                            Tab.Home -> HomeDashboardTab
                             is Tab.Library -> LibraryTab
                             Tab.Updates -> UpdatesTab
                             Tab.History -> HistoryTab
@@ -174,32 +178,42 @@ object HomeScreen : Screen() {
         val navigator = LocalNavigator.currentOrThrow
         val scope = rememberCoroutineScope()
         val selected = tabNavigator.current::class == tab::class
-        NavigationSuiteItem(
-            navigationSuiteType = navigationSuiteType,
-            selected = selected,
-            onClick = {
-                if (!selected) {
-                    tabNavigator.current = tab
-                } else {
-                    scope.launch { tab.onReselect(navigator) }
-                }
-            },
-            icon = {
-                Icon(
-                    painter = tab.options.icon!!,
-                    contentDescription = tab.options.title,
-                )
-            },
-            label = {
-                Text(
-                    text = tab.options.title,
-                    style = MaterialTheme.typography.labelLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            },
-            badge = tabBadge(tab),
+        // Yomi glass dock: violet pill behind the active icon (indicator = secondaryContainer
+        // at 15% tint), violet icon and label (onSecondaryContainer / secondary per the M3
+        // navigation item token mapping). Scoped here so the rest of the app is unaffected.
+        val navColors = MaterialTheme.colorScheme.copy(
+            secondaryContainer = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+            onSecondaryContainer = MaterialTheme.colorScheme.primary,
+            secondary = MaterialTheme.colorScheme.primary,
         )
+        MaterialTheme(colorScheme = navColors) {
+            NavigationSuiteItem(
+                navigationSuiteType = navigationSuiteType,
+                selected = selected,
+                onClick = {
+                    if (!selected) {
+                        tabNavigator.current = tab
+                    } else {
+                        scope.launch { tab.onReselect(navigator) }
+                    }
+                },
+                icon = {
+                    Icon(
+                        painter = tab.options.icon!!,
+                        contentDescription = tab.options.title,
+                    )
+                },
+                label = {
+                    Text(
+                        text = tab.options.title,
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+                badge = tabBadge(tab),
+            )
+        }
     }
 
     @Composable
@@ -267,10 +281,11 @@ object HomeScreen : Screen() {
     }
 
     sealed interface Tab {
+        data object Home : Tab
         data class Library(val mangaIdToOpen: Long? = null) : Tab
         data object Updates : Tab
         data object History : Tab
         data class Browse(val toExtensions: Boolean = false) : Tab
-        data class More(val toDownloads: Boolean) : Tab
+        data class More(val toDownloads: Boolean = false) : Tab
     }
 }

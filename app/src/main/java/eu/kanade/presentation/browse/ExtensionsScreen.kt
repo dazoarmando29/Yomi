@@ -429,7 +429,9 @@ private fun ExtensionItemMetadata(
         val notable = listOfNotNull(
             when {
                 installStep == InstallStep.Pending -> MR.strings.ext_pending to MaterialTheme.colorScheme.primary
-                installStep == InstallStep.Downloading -> MR.strings.ext_downloading to MaterialTheme.colorScheme.primary
+                installStep == InstallStep.Downloading ->
+                    MR.strings.ext_downloading to
+                        MaterialTheme.colorScheme.primary
                 installStep == InstallStep.Installing -> MR.strings.ext_installing to MaterialTheme.colorScheme.primary
                 installStep is InstallStep.Error && installStep.reason != null -> {
                     installStep.reason to MaterialTheme.colorScheme.error

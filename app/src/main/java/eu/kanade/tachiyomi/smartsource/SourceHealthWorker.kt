@@ -9,9 +9,9 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
+import dev.zacsweers.metro.Inject
 import eu.kanade.tachiyomi.smartsource.health.SourceHealthChecker
 import eu.kanade.tachiyomi.smartsource.health.SourceHealthStore
-import dev.zacsweers.metro.Inject
 import eu.kanade.tachiyomi.util.system.workManager
 import mihon.app.di.AppGraph
 import mihon.core.metro.metroGraph

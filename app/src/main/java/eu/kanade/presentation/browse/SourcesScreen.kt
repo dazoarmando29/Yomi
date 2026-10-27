@@ -1,23 +1,35 @@
 package eu.kanade.presentation.browse
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import eu.kanade.presentation.browse.components.BaseSourceItem
+import eu.kanade.presentation.browse.components.SourceIcon
 import eu.kanade.tachiyomi.ui.browse.source.SourcesViewModel
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceViewModel.Listing
 import eu.kanade.tachiyomi.util.system.LocaleHelper
@@ -98,12 +110,25 @@ private fun SourceHeader(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    Text(
-        text = LocaleHelper.getSourceDisplayName(language, context),
-        modifier = modifier
-            .padding(horizontal = MaterialTheme.padding.medium, vertical = MaterialTheme.padding.small),
-        style = MaterialTheme.typography.header,
-    )
+    Row(
+        modifier = modifier.padding(
+            horizontal = MaterialTheme.padding.medium,
+            vertical = MaterialTheme.padding.small,
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = 3.dp, height = 14.dp)
+                .clip(RoundedCornerShape(50))
+                .background(MaterialTheme.colorScheme.primary),
+        )
+        Spacer(modifier = Modifier.width(MaterialTheme.padding.small))
+        Text(
+            text = LocaleHelper.getSourceDisplayName(language, context),
+            style = MaterialTheme.typography.header,
+        )
+    }
 }
 
 @Composable
@@ -114,28 +139,106 @@ private fun SourceItem(
     onClickPin: (Source) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BaseSourceItem(
-        modifier = modifier,
-        source = source,
-        onClickItem = { onClickItem(source, Listing.Popular) },
-        onLongClickItem = { onLongClickItem(source) },
-        action = {
-            if (source.supportsLatest) {
-                TextButton(onClick = { onClickItem(source, Listing.Latest) }) {
-                    Text(
-                        text = stringResource(MR.strings.latest),
-                        style = LocalTextStyle.current.copy(
-                            color = MaterialTheme.colorScheme.primary,
-                        ),
-                    )
+    Box(
+        modifier = modifier.padding(horizontal = MaterialTheme.padding.medium, vertical = 4.dp),
+    ) {
+        BaseSourceItem(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerLow),
+            source = source,
+            onClickItem = { onClickItem(source, Listing.Popular) },
+            onLongClickItem = { onLongClickItem(source) },
+            icon = { src ->
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    SourceIcon(source = src, modifier = Modifier.size(28.dp))
                 }
-            }
-            SourcePinButton(
-                isPinned = Pin.Pinned in source.pin,
-                onClick = { onClickPin(source) },
-            )
-        },
-    )
+            },
+            content = { src, sourceLangString ->
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = MaterialTheme.padding.small),
+                ) {
+                    Text(
+                        text = src.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    if (sourceLangString != null) {
+                        Text(
+                            text = sourceLangString,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+            },
+            action = {
+                SourceHealthIndicator(sourceId = source.id)
+                if (source.supportsLatest) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                            .clickable { onClickItem(source, Listing.Latest) }
+                            .padding(horizontal = 12.dp, vertical = 5.dp),
+                    ) {
+                        Text(
+                            text = stringResource(MR.strings.latest),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+                SourcePinButton(
+                    isPinned = Pin.Pinned in source.pin,
+                    onClick = { onClickPin(source) },
+                )
+            },
+        )
+    }
+}
+
+@Composable
+private fun SourceHealthIndicator(sourceId: Long) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val record = androidx.compose.runtime.remember(sourceId) {
+        eu.kanade.tachiyomi.smartsource.health.SourceHealthStore(context)
+            .get(eu.kanade.tachiyomi.smartsource.model.HealthRecord.sourceKey(sourceId))
+    }
+    val color = when {
+        record.status in setOf(
+            eu.kanade.tachiyomi.smartsource.model.HealthStatus.BROKEN,
+            eu.kanade.tachiyomi.smartsource.model.HealthStatus.INCOMPATIBLE,
+            eu.kanade.tachiyomi.smartsource.model.HealthStatus.REPOSITORY_MISSING,
+            eu.kanade.tachiyomi.smartsource.model.HealthStatus.AUTHENTICATION_REQUIRED,
+        ) -> MaterialTheme.colorScheme.error
+        record.status == eu.kanade.tachiyomi.smartsource.model.HealthStatus.TEMPORARILY_UNAVAILABLE &&
+            record.consecutiveFailures >= 2 -> MaterialTheme.colorScheme.errorContainer
+        record.status == eu.kanade.tachiyomi.smartsource.model.HealthStatus.UPDATE_AVAILABLE ->
+            MaterialTheme.colorScheme.primary
+        else -> null
+    }
+    if (color != null) {
+        androidx.compose.foundation.layout.Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(androidx.compose.foundation.shape.CircleShape)
+                .background(color),
+        )
+    }
 }
 
 @Composable

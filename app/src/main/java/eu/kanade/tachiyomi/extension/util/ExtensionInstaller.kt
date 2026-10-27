@@ -260,7 +260,8 @@ private fun Exception.toInstallErrorReason(): String {
         is SignatureMismatchException -> message ?: "Signature verification failed"
         is DownloadFailedException -> message ?: "Download failed"
         is java.net.SocketTimeoutException -> "The download timed out. Check your connection and try again."
-        is IOException -> "Network error: ${message ?: "connection problem"}. The installed extension was left unchanged."
+        is IOException ->
+            "Network error: ${message ?: "connection problem"}. The installed extension was left unchanged."
         else -> message ?: "Installation failed. The installed extension was left unchanged."
     }
 }

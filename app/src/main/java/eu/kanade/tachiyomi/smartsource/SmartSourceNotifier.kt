@@ -17,7 +17,9 @@ class SmartSourceNotifier(private val context: Context) {
         if (report.problems <= 0) return
 
         val summary = report.problemSummaries.joinToString("\n")
-            .ifBlank { context.stringResource(MR.strings.yomi_smart_source_notification_text, report.problems, report.updates) }
+            .ifBlank {
+                context.stringResource(MR.strings.yomi_smart_source_notification_text, report.problems, report.updates)
+            }
 
         val notification = context.notificationBuilder(Notifications.CHANNEL_SMART_SOURCE) {
             setContentTitle(context.stringResource(MR.strings.yomi_smart_source_notification_title))

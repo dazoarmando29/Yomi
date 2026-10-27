@@ -403,7 +403,11 @@ class LibraryUpdateWorker(private val context: Context, workerParams: WorkerPara
                                             )
                                         }
                                         updateStateStore.update(manga.id, manga.title) {
-                                            it.afterFailure(failureAt, errorMessage ?: classification.reason, nextEligible)
+                                            it.afterFailure(
+                                                failureAt,
+                                                errorMessage ?: classification.reason,
+                                                nextEligible,
+                                            )
                                         }
                                         updateStateStore.recordEvent(
                                             UpdateEvent(

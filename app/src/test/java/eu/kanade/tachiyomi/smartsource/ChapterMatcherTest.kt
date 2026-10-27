@@ -1,10 +1,10 @@
 package eu.kanade.tachiyomi.smartsource
 
+import eu.kanade.tachiyomi.smartsource.migration.CandidateManga
 import eu.kanade.tachiyomi.smartsource.migration.MigrationPlan
 import eu.kanade.tachiyomi.smartsource.migration.MigrationPlanner
 import eu.kanade.tachiyomi.smartsource.migration.MigrationSnapshotStore
 import eu.kanade.tachiyomi.smartsource.migration.OriginalManga
-import eu.kanade.tachiyomi.smartsource.migration.CandidateManga
 import eu.kanade.tachiyomi.smartsource.migration.SnapshotHistory
 import eu.kanade.tachiyomi.smartsource.model.CandidateMetrics
 import eu.kanade.tachiyomi.smartsource.model.IdentitySignals

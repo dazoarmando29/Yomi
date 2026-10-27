@@ -1,9 +1,13 @@
 package eu.kanade.presentation.more
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import eu.kanade.presentation.more.settings.widget.SwitchPreferenceWidget
 import eu.kanade.presentation.more.settings.widget.TextPreferenceWidget
@@ -23,6 +27,7 @@ import tachiyomi.core.common.Constants
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.ScrollbarLazyColumn
 import tachiyomi.presentation.core.components.material.Scaffold
+import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.i18n.pluralStringResource
 import tachiyomi.presentation.core.i18n.stringResource
 
@@ -69,7 +74,7 @@ fun MoreScreen(
                 )
             }
 
-            item { HorizontalDivider() }
+            item { MoreSectionHeader(text = stringResource(MR.strings.yomi_more_library_section)) }
 
             item {
                 val downloadQueueState = downloadQueueStateProvider()
@@ -122,7 +127,7 @@ fun MoreScreen(
                 )
             }
 
-            item { HorizontalDivider() }
+            item { MoreSectionHeader(text = stringResource(MR.strings.yomi_more_preferences_section)) }
 
             item {
                 TextPreferenceWidget(
@@ -154,4 +159,19 @@ fun MoreScreen(
             }
         }
     }
+}
+
+@Composable
+private fun MoreSectionHeader(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(
+            start = MaterialTheme.padding.medium,
+            top = MaterialTheme.padding.medium,
+            bottom = MaterialTheme.padding.extraSmall,
+        ),
+    )
 }

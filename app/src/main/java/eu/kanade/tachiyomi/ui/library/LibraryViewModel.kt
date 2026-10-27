@@ -98,9 +98,25 @@ class LibraryViewModel(
     private val downloadManager: DownloadManager,
     private val downloadCache: DownloadCache,
     private val trackerManager: TrackerManager,
+    private val mangaRepository: tachiyomi.domain.manga.repository.MangaRepository,
 ) : ViewModel() {
 
     private val subscriberGate = SubscriberGate()
+
+    @Volatile
+    private var pinnedIds: Set<Long> = emptySet()
+
+    init {
+        appScope.launch { pinnedIds = mangaRepository.getPinnedIds() }
+    }
+
+    fun togglePin(mangaId: Long) {
+        appScope.launch {
+            val newState = mangaId !in mangaRepository.getPinnedIds()
+            mangaRepository.setPinned(mangaId, newState)
+            pinnedIds = mangaRepository.getPinnedIds()
+        }
+    }
 
     private val searchQuery = MutableStateFlow<String?>(null)
 
@@ -377,7 +393,8 @@ class LibraryViewModel(
                 .let { if (key.sort.isAscending) it else it.reversed() }
                 .thenComparator(sortAlphabetically)
 
-            manga.sortedWith(comparator).map { it.id }
+            manga.sortedWith(compareByDescending<LibraryItem> { it.id in pinnedIds }.then(comparator))
+                .map { it.id }
         }
     }
 

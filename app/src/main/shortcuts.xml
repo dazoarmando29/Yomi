@@ -47,4 +47,16 @@
             android:targetClass="eu.kanade.tachiyomi.ui.main.MainActivity"
             android:targetPackage="${applicationId}" />
     </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/sc_collections_bookmark_48dp"
+        android:shortcutDisabledMessage="@string/app_not_available"
+        android:shortcutId="show_downloads"
+        android:shortcutLongLabel="@string/yomi_shortcut_downloads"
+        android:shortcutShortLabel="@string/yomi_shortcut_downloads">
+        <intent
+            android:action="eu.kanade.tachiyomi.SHOW_DOWNLOADS"
+            android:targetClass="eu.kanade.tachiyomi.ui.main.MainActivity"
+            android:targetPackage="${applicationId}" />
+    </shortcut>
 </shortcuts>
