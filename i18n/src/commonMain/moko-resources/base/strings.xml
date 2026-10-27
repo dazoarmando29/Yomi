@@ -673,7 +673,14 @@
     <string name="yomi_home_view_all">View all</string>
     <string name="yomi_more_library_section">Library &amp; management</string>
     <string name="yomi_more_preferences_section">Preferences &amp; info</string>
+    <string name="yomi_more_version">v%1$s</string>
+    <string name="yomi_more_tagline">Reader preferences &amp; storage</string>
     <string name="yomi_manga_continue_title">Continue where you left off</string>
+    <string name="yomi_history_week_label">chapters this week</string>
+    <string name="yomi_history_today_line">Today: %1$d chapters • %2$d titles</string>
+    <string name="yomi_history_streak">%1$d d</string>
+    <string name="yomi_mark_all_read">Mark all read</string>
+    <string name="yomi_library_check_updates">Check for updates</string>
     <string name="yomi_chapter_search">Search chapters</string>
     <string name="yomi_menu_continue_reading">Continue reading</string>
     <string name="yomi_menu_view_details">View details</string>
