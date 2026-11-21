@@ -75,7 +75,8 @@ and `set -o pipefail` (failures are not masked).
 | 44916724151 | e8d58db8f | ❌ `swift test` step reported ✗ hidden by `tee` (workflow bug fixed); real result: 7 compile errors found |
 | 44917306921 | 79d3e372d | ❌ 1 remaining compile error (`missing try` in `ReaderLogicTests`) — fixed in c187d361d |
 | 44917611529 | c187d361d | ❌ suite compiled and ran: 8 test failures → all traced to 6 real bugs + 1 bad fixture (date decoding strategy, favorite write-through, chapter identity matching, empty-deflate edge case, directory sizes in storage usage, packed-varint fixture) — fixed in 9885357ca |
-| in progress | 9885357ca | see below |
+| 44918209976 | 9885357ca | ✅ **`swift test`: Executed 81 tests, 0 failures** (30.9 s). ❌ simulator build: project-generator path bug (top-level sources not grouped) — fixed in 3198ef596 |
+| in progress | 3198ef596 | see below |
 
 (Final counts updated below once the run completes.)
 

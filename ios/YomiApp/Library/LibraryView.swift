@@ -6,7 +6,7 @@ import YomiKit
 @MainActor
 final class LibraryViewModel: ObservableObject {
     @Published var entries: [LibraryEntry] = []
-    @Published var categories: [Category] = []
+    @Published var categories: [YomiKit.Category] = []
     @Published var searchText = ""
     @Published var selectedCategoryID: Int64?
     @Published var displayMode: LibraryDisplayMode = .comfortableGrid
