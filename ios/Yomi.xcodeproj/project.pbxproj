@@ -1,0 +1,409 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CC7649BEA7703F35089F215A /* YomiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD459828842A4D3A7835996 /* YomiApp.swift */; };
+		C691D49CDF0D567AFB11619C /* SourceImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353A59E05F414B808E309E65 /* SourceImageView.swift */; };
+		3DBAC338E8BE3F13CAF79BBB /* YomiTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93DB8036C87822F56E07A819 /* YomiTheme.swift */; };
+		B9D2B8F546CA2DFCCFF96FCF /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AF496FCD44D8EA2ECDBB695 /* LibraryView.swift */; };
+		348EEEAC3F048C21386938EC /* BrowseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6ACD49F6CE8A1486E02F42 /* BrowseView.swift */; };
+		60CD108BEE7BDFB68C8980CF /* MangaDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF43DDF033379D9BA4BFC0DA /* MangaDetailsView.swift */; };
+		EA05D5217619FE8EC05D87E8 /* ReaderPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F66C50806AB678D653CA4D3 /* ReaderPages.swift */; };
+		999C9FD29784DFD32ADFAFA2 /* ReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1315A42CF8387F9F076E5A1A /* ReaderView.swift */; };
+		585F4D9C4D85403871B22B73 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBF8BA3395FC6F1D57D1060 /* HistoryView.swift */; };
+		FFAE03EDBE6D9AB38F8E591D /* DownloadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 587C9ADBC27A0471EDC653EB /* DownloadsView.swift */; };
+		C37097B89EC2C0E347B95FCA /* BackupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA4723AEF61BB177401954A /* BackupView.swift */; };
+		2B0AFA103166991696D94F88 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0171141AB009A49486642E54 /* SettingsView.swift */; };
+		F6FE9B395F3252AD4FE8C893 /* TrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC862B7206AC1DE8CACFE8E /* TrackingView.swift */; };
+		C73282A8856A4BC478695D0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AAE92BFE57620BCF85248746 /* Assets.xcassets */; };
+		3064F5F99AEF87081637FD06 /* YomiKit in Frameworks */ = {isa = PBXBuildFile; productRef = E558736A9BD0463A0572A63C /* YomiKit */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		FAD459828842A4D3A7835996 /* YomiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YomiApp.swift"; sourceTree = "<group>"; };
+		353A59E05F414B808E309E65 /* SourceImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SourceImageView.swift"; sourceTree = "<group>"; };
+		93DB8036C87822F56E07A819 /* YomiTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YomiTheme.swift"; sourceTree = "<group>"; };
+		6AF496FCD44D8EA2ECDBB695 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LibraryView.swift"; sourceTree = "<group>"; };
+		0B6ACD49F6CE8A1486E02F42 /* BrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BrowseView.swift"; sourceTree = "<group>"; };
+		DF43DDF033379D9BA4BFC0DA /* MangaDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MangaDetailsView.swift"; sourceTree = "<group>"; };
+		9F66C50806AB678D653CA4D3 /* ReaderPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReaderPages.swift"; sourceTree = "<group>"; };
+		1315A42CF8387F9F076E5A1A /* ReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReaderView.swift"; sourceTree = "<group>"; };
+		9FBF8BA3395FC6F1D57D1060 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HistoryView.swift"; sourceTree = "<group>"; };
+		587C9ADBC27A0471EDC653EB /* DownloadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DownloadsView.swift"; sourceTree = "<group>"; };
+		4FA4723AEF61BB177401954A /* BackupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupView.swift"; sourceTree = "<group>"; };
+		0171141AB009A49486642E54 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView.swift"; sourceTree = "<group>"; };
+		CAC862B7206AC1DE8CACFE8E /* TrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrackingView.swift"; sourceTree = "<group>"; };
+		AAE92BFE57620BCF85248746 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
+		3843314157643D1BE0B73B47 /* Yomi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yomi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		019BAB185F97B56993A7087D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3064F5F99AEF87081637FD06 /* YomiKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		361FF3508AF23F4E0CB329EA = {
+			isa = PBXGroup;
+			children = (
+				2FF2989549825C3F72487FE3 /* YomiApp */,
+				43931CF8D8FF624E4C75AE32 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2FF2989549825C3F72487FE3 /* YomiApp */ = {
+			isa = PBXGroup;
+			children = (
+				5A6AB5080A9F00145806AF32 /* Theme */,
+				021AD52ECEAB226F863B8C24 /* Library */,
+				6A24CC378508A24A3645A397 /* Browse */,
+				A9CF68AB9CD6BE4B8BD6D8F3 /* MangaDetails */,
+				ED1320499F19ADF720B43483 /* Reader */,
+				36A31E4F78C2A69B06355EA5 /* History */,
+				09CDC4B8C19213DBCD3F7A54 /* Downloads */,
+				E4E9CF0ABCBB76496F84C484 /* Settings */,
+				52B0CA5238A8880EC14961ED /* Resources */,
+
+			);
+			path = YomiApp;
+			sourceTree = "<group>";
+		};
+		5A6AB5080A9F00145806AF32 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				353A59E05F414B808E309E65 /* SourceImageView.swift */,
+				93DB8036C87822F56E07A819 /* YomiTheme.swift */,
+
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		021AD52ECEAB226F863B8C24 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				6AF496FCD44D8EA2ECDBB695 /* LibraryView.swift */,
+
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		6A24CC378508A24A3645A397 /* Browse */ = {
+			isa = PBXGroup;
+			children = (
+				0B6ACD49F6CE8A1486E02F42 /* BrowseView.swift */,
+
+			);
+			path = Browse;
+			sourceTree = "<group>";
+		};
+		A9CF68AB9CD6BE4B8BD6D8F3 /* MangaDetails */ = {
+			isa = PBXGroup;
+			children = (
+				DF43DDF033379D9BA4BFC0DA /* MangaDetailsView.swift */,
+
+			);
+			path = MangaDetails;
+			sourceTree = "<group>";
+		};
+		ED1320499F19ADF720B43483 /* Reader */ = {
+			isa = PBXGroup;
+			children = (
+				9F66C50806AB678D653CA4D3 /* ReaderPages.swift */,
+				1315A42CF8387F9F076E5A1A /* ReaderView.swift */,
+
+			);
+			path = Reader;
+			sourceTree = "<group>";
+		};
+		36A31E4F78C2A69B06355EA5 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				9FBF8BA3395FC6F1D57D1060 /* HistoryView.swift */,
+
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		09CDC4B8C19213DBCD3F7A54 /* Downloads */ = {
+			isa = PBXGroup;
+			children = (
+				587C9ADBC27A0471EDC653EB /* DownloadsView.swift */,
+
+			);
+			path = Downloads;
+			sourceTree = "<group>";
+		};
+		E4E9CF0ABCBB76496F84C484 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				4FA4723AEF61BB177401954A /* BackupView.swift */,
+				0171141AB009A49486642E54 /* SettingsView.swift */,
+				CAC862B7206AC1DE8CACFE8E /* TrackingView.swift */,
+
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		52B0CA5238A8880EC14961ED /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AAE92BFE57620BCF85248746 /* Assets.xcassets */,
+
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		43931CF8D8FF624E4C75AE32 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3843314157643D1BE0B73B47 /* Yomi.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CB736C4B244192C9C7382552 /* Yomi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A886B50DF087AEF7B87CDC65 /* Build configuration list for PBXNativeTarget "Yomi" */;
+			buildPhases = (
+				C2511B36F0F0E810A9E46328 /* Sources */,
+				019BAB185F97B56993A7087D /* Frameworks */,
+				C2112B99FC6905E49DE55430 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Yomi;
+			packageProductDependencies = (
+				E558736A9BD0463A0572A63C /* YomiKit */,
+			);
+			productName = Yomi;
+			productReference = 3843314157643D1BE0B73B47 /* Yomi.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		85D368FE68C556A9B7942C75 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					CB736C4B244192C9C7382552 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 26E84C2B3712F7DFAC8AD93F /* Build configuration list for PBXProject "Yomi" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 361FF3508AF23F4E0CB329EA;
+			packageReferences = (
+				31219247902614568C7568BC /* XCLocalSwiftPackageReference "YomiKit" */,
+			);
+			productRefGroup = 43931CF8D8FF624E4C75AE32 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CB736C4B244192C9C7382552 /* Yomi */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C2112B99FC6905E49DE55430 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C73282A8856A4BC478695D0B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C2511B36F0F0E810A9E46328 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC7649BEA7703F35089F215A /* YomiApp.swift in Sources */,
+				C691D49CDF0D567AFB11619C /* SourceImageView.swift in Sources */,
+				3DBAC338E8BE3F13CAF79BBB /* YomiTheme.swift in Sources */,
+				B9D2B8F546CA2DFCCFF96FCF /* LibraryView.swift in Sources */,
+				348EEEAC3F048C21386938EC /* BrowseView.swift in Sources */,
+				60CD108BEE7BDFB68C8980CF /* MangaDetailsView.swift in Sources */,
+				EA05D5217619FE8EC05D87E8 /* ReaderPages.swift in Sources */,
+				999C9FD29784DFD32ADFAFA2 /* ReaderView.swift in Sources */,
+				585F4D9C4D85403871B22B73 /* HistoryView.swift in Sources */,
+				FFAE03EDBE6D9AB38F8E591D /* DownloadsView.swift in Sources */,
+				C37097B89EC2C0E347B95FCA /* BackupView.swift in Sources */,
+				2B0AFA103166991696D94F88 /* SettingsView.swift in Sources */,
+				F6FE9B395F3252AD4FE8C893 /* TrackingView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		70DCC1EB255A5F3C8D9ED349 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)",);
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C3DCEEC1E0EB17A5583B8E94 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DB189EBE9D4E38495C3C7EF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Yomi;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks",);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.yomi.reader;
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		032222C0BAA33BC7119DFAF1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Yomi;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks",);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.yomi.reader;
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		26E84C2B3712F7DFAC8AD93F /* Build configuration list for PBXProject "Yomi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70DCC1EB255A5F3C8D9ED349 /* Debug */,
+				C3DCEEC1E0EB17A5583B8E94 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A886B50DF087AEF7B87CDC65 /* Build configuration list for PBXNativeTarget "Yomi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB189EBE9D4E38495C3C7EF5 /* Debug */,
+				032222C0BAA33BC7119DFAF1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		31219247902614568C7568BC /* XCLocalSwiftPackageReference "YomiKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = YomiKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E558736A9BD0463A0572A63C /* YomiKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = YomiKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 85D368FE68C556A9B7942C75 /* Project object */;
+}

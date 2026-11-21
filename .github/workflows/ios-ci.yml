@@ -1,0 +1,129 @@
+# iOS CI — Yomi
+
+name: iOS CI
+
+on:
+  push:
+    branches: [feature/ios-port, develop/**, ui/**]
+    paths: ["ios/**", ".github/workflows/ios-ci.yml"]
+  pull_request:
+    paths: ["ios/**", ".github/workflows/ios-ci.yml"]
+  workflow_dispatch:
+
+jobs:
+  project-lint:
+    name: Project generator + structure check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify generated Xcode project is current
+        run: python3 ios/tools/generate_xcodeproj.py --check
+
+  yomikit-tests:
+    name: YomiKit unit tests (swift test)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show Swift version
+        run: swift --version
+      - name: Run YomiKit test suite
+        run: swift test --package-path ios/YomiKit 2>&1 | tee ios-test-output.log
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yomikit-test-log
+          path: ios-test-output.log
+
+  build-ios-app:
+    name: Build Yomi app (iOS Simulator, unsigned)
+    runs-on: macos-15
+    needs: [project-lint, yomikit-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show Xcode version
+        run: xcodebuild -version
+      - name: Build for iOS Simulator (no code signing)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios/Yomi.xcodeproj \
+            -scheme Yomi \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build 2>&1 | tee xcodebuild.log
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: xcodebuild.log
+      - name: Upload built app (unsigned simulator build)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Yomi-simulator-app
+          path: ~/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/Yomi.app
+          if-no-files-found: warn
+
+  # Optional signed device build. Only runs when triggered manually and when
+  # signing secrets are configured in the repository (never committed):
+  #   IOS_SIGNING_CERTIFICATE_P12_BASE64 + IOS_SIGNING_CERTIFICATE_PASSWORD
+  #   IOS_PROVISIONING_PROFILE_BASE64 + IOS_TEAM_ID
+  build-signed-ipa:
+    name: Signed device IPA (manual, requires secrets)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: macos-15
+    needs: [yomikit-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for signing secrets
+        id: check
+        run: |
+          if [ -n "${{ secrets.IOS_SIGNING_CERTIFICATE_P12_BASE64 }}" ] && [ -n "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "Signing secrets are not configured — skipping signed build."
+          fi
+      - name: Install signing certificate and profile
+        if: steps.check.outputs.available == 'true'
+        run: |
+          echo "${{ secrets.IOS_SIGNING_CERTIFICATE_P12_BASE64 }}" | base64 --decode > cert.p12
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security import cert.p12 -k build.keychain -P "${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
+          rm cert.p12
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+      - name: Archive and export IPA
+        if: steps.check.outputs.available == 'true'
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/Yomi.xcodeproj -scheme Yomi \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/Yomi.xcarchive \
+            archive DEVELOPMENT_TEAM=${{ secrets.IOS_TEAM_ID }} | tee archive.log
+          cat > ExportOptions.plist <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>development</string>
+            <key>teamID</key><string>${{ secrets.IOS_TEAM_ID }}</string>
+            <key>signingStyle</key><string>manual</string>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive -archivePath build/Yomi.xcarchive \
+            -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
+      - name: Upload IPA
+        if: steps.check.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Yomi-device-ipa
+          path: build/ipa/*.ipa

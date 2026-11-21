@@ -21,3 +21,6 @@ build.log
 build.pid
 test.log
 release.log
+
+# SwiftPM build artifacts (iOS)
+ios/YomiKit/.build/
