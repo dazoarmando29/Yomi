@@ -118,7 +118,89 @@ artifact, then install with one of:
 secrets to the repository. The workflow reads them only from GitHub encrypted
 secrets.
 
-## 5. Unsigned simulator build vs signed device build — the difference
+## 5. FREE path: sign & install on a physical iPhone from Windows (no Mac, $0)
+
+This is the supported free workflow. The app is built **unsigned** for physical
+iPhoneOS on GitHub Actions, then signed *on your own PC* with your free Apple ID
+via Sideloadly (or AltStore). Your Apple credentials never leave your PC.
+
+**Validated constraints of a free Apple ID (Apple-imposed, not tool limitations):**
+
+| Constraint | Value |
+|---|---|
+| App signing validity | **7 days** — re-sign/refresh before expiry |
+| Sideloaded apps active at once | **3** |
+| Unique devices registered per 7 days | 3 (10 App ID registrations / 7 days) |
+| Cost | $0 — no Developer Program membership |
+
+Sideloadly and AltStore Classic both remain actively maintained in 2026 and both
+handle this exact case (arm64 SwiftUI app, static SwiftPM core, **no entitlements,
+no embedded frameworks** — re-signing is maximally reliable).
+
+### 5.1 Produce `Yomi-unsigned.ipa`
+
+1. GitHub → **Actions → iOS CI → Run workflow** (manual dispatch).
+2. The `build-unsigned-ipa` job builds `Release-iphoneos/Yomi.app` with code
+   signing disabled, verifies it (arm64 + iOS-device platform, bundle id
+   `app.yomi.reader`, min iOS 17, `Payload/Yomi.app` structure) and uploads
+   **`Yomi-unsigned-ipa`**.
+3. Download and unzip the artifact on Windows. `ios/tools/verify_ipa.py
+   Yomi-unsigned.ipa` re-verifies it locally (pure Python).
+
+### 5.2 Windows USB stack (required by every option below)
+
+1. Install **Apple Devices** from the Microsoft Store (or iTunes for Windows from
+   apple.com). Either provides the Apple Mobile Device driver + `usbmuxd`.
+2. Connect the iPhone, unlock, tap **Trust**. Apple Devices should list the phone.
+3. Optional but useful: `python -m pip install pymobiledevice3`, then
+   `python -m pymobiledevice3 usbmux list` and `python -m pymobiledevice3
+   lockdown info` for UDID/OS version, and `python -m pymobiledevice3 syslog`
+   for runtime logs. (Requires the Apple Mobile Device service to be running:
+   `Get-Service "Apple Mobile Device Service"` should show *Running*.)
+4. On the iPhone: **Settings → Privacy & Security → Developer Mode → On**,
+   then reboot and confirm.
+
+### 5.3 Sign & install with Sideloadly (simplest)
+
+1. Download Sideloadly from **sideloadly.io** and install it.
+2. Select `Yomi-unsigned.ipa`; pick your connected iPhone.
+3. Enter your Apple ID (used only locally for Apple's signing service).
+4. **Advanced options:** keep the original bundle ID `app.yomi.reader` (so app
+   data survives re-signs; Sideloadly only rewrites it if you enable that option).
+5. **Start**. The first run registers your device and signs with a free
+   "Personal Team" profile; the app appears on the iPhone.
+6. First launch may need **Settings → General → VPN & Device Management →
+   trust your Apple ID**.
+
+### 5.4 Alternative: AltStore Classic (best auto-refresh)
+
+1. Install **AltServer** (altstore.io) on Windows, install **AltStore Classic**
+   onto the iPhone via AltServer (same USB/Wi-Fi network).
+2. Open `Yomi-unsigned.ipa` with AltStore on the phone → it installs using your
+   free Apple ID.
+3. Enable background refresh: with AltServer running on the same Wi-Fi, AltStore
+   silently re-signs before expiry. Firewall must allow AltServer.
+
+### 5.5 The 7-day cycle (data-preserving)
+
+When the free profile expires the app stops launching until re-signed. To keep
+all library/downloads data: **re-sign and install as an update with the same
+bundle id and same Apple ID** — iOS preserves the container. Sideloadly
+"auto-refresh" (device + PC on same network) and AltServer's background refresh
+both prevent expiry lapses. If it *does* expire, re-running the install restores
+data as long as the app is not deleted first.
+
+### 5.6 Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| Sideloadly "device not found" | Apple Devices not installed/service stopped; re-plug; Trust prompt missing → reset Location & Privacy only if needed |
+| "Unsupported architecture" | Artifact is wrong — re-run the CI job; `verify_ipa.py` must pass |
+| App installs but instantly closes | Profile expired (7 days) or device not registered — re-sign |
+| "Developer Mode required" | Enable per §5.2.4 |
+| Free account 3-app limit reached | Remove another sideloaded app or use a second Apple ID |
+
+## 6. Unsigned simulator build vs signed device build — the difference
 
 - **Simulator build** (`CODE_SIGNING_ALLOWED=NO`): x86_64/arm64 binaries that run
   in the iOS Simulator only. They are *not* code-signed and **cannot be installed
@@ -128,7 +210,7 @@ secrets.
   UDID. Only these can be installed on a real iPhone. Apple verifies the signature
   at install and launch; this cannot and must not be bypassed.
 
-## 6. Windows-side verification (what you can run here)
+## 7. Windows-side verification (what you can run here)
 
 ```powershell
 # Project structure check
@@ -142,7 +224,7 @@ swift test --package-path ios\YomiKit
 Note: Swift for Windows also needs the MSVC linker (`link.exe`) from the
 "Desktop development with C++" workload of Visual Studio Build Tools.
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 | Symptom | Fix |
 |---|---|

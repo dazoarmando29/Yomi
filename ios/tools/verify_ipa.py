@@ -89,9 +89,7 @@ def verify_app(app_dir: Path) -> list:
     failures = []
     print(f"Verifying app bundle: {app_dir}")
 
-    binary = app_dir / app_dir.name
-    check(binary.is_file(), f"main executable exists ({binary.name})", failures)
-
+    info = {}
     info_plist = app_dir / "Info.plist"
     check(info_plist.is_file(), "Info.plist exists", failures)
     if info_plist.is_file():
@@ -119,6 +117,11 @@ def verify_app(app_dir: Path) -> list:
             "app display name is Yomi",
             failures,
         )
+
+    # The main executable is CFBundleExecutable (typically "Yomi" inside "Yomi.app")
+    executable_name = info.get("CFBundleExecutable") or app_dir.stem
+    binary = app_dir / executable_name
+    check(binary.is_file(), f"main executable exists ({executable_name})", failures)
 
     if binary.is_file():
         data = binary.read_bytes()
