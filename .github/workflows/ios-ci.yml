@@ -70,6 +70,58 @@ jobs:
           path: ~/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/Yomi.app
           if-no-files-found: warn
 
+  # Unsigned physical-device IPA for free Apple ID signing (Sideloadly/AltStore).
+  # Build is fully unsigned; signing happens locally on the user's Windows PC —
+  # Apple credentials never enter GitHub Actions.
+  build-unsigned-ipa:
+    name: Unsigned device IPA (manual — free Apple ID signing)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show Xcode version
+        run: xcodebuild -version
+      - name: Build Release for physical iPhoneOS (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios/Yomi.xcodeproj \
+            -scheme Yomi \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build 2>&1 | tee ios-unsigned-build.log
+      - name: Locate built app
+        id: app
+        run: |
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -type d -name "Yomi.app" -path "*Release-iphoneos*" | head -1)
+          echo "Built app: $APP_PATH"
+          test -n "$APP_PATH"
+          echo "path=$APP_PATH" >> "$GITHUB_OUTPUT"
+      - name: Verify device build (arm64, iOS platform, bundle id, min iOS)
+        run: python3 ios/tools/verify_ipa.py "${{ steps.app.outputs.path }}"
+      - name: Package Yomi-unsigned.ipa
+        run: |
+          rm -rf Payload Yomi-unsigned.ipa
+          mkdir Payload
+          cp -R "${{ steps.app.outputs.path }}" Payload/
+          zip -r -q Yomi-unsigned.ipa Payload
+      - name: Verify packaged IPA structure
+        run: python3 ios/tools/verify_ipa.py Yomi-unsigned.ipa
+      - name: Upload Yomi-unsigned.ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: Yomi-unsigned-ipa
+          path: Yomi-unsigned.ipa
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned-build-log
+          path: ios-unsigned-build.log
+
   # Optional signed device build. Only runs when triggered manually and when
   # signing secrets are configured in the repository (never committed):
   #   IOS_SIGNING_CERTIFICATE_P12_BASE64 + IOS_SIGNING_CERTIFICATE_PASSWORD

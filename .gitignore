@@ -24,3 +24,4 @@ release.log
 
 # SwiftPM build artifacts (iOS)
 ios/YomiKit/.build/
+__pycache__/
