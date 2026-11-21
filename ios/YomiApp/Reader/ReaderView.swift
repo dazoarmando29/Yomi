@@ -44,7 +44,7 @@ final class ReaderViewModel: ObservableObject {
         // Offline-first: downloaded pages win over network fetches.
         if let localPages = await environment.downloads.downloadedPages(manga: manga, chapter: chapter) {
             pages = localPages.enumerated().map {
-                ReaderPageModel(id: $0.offset, urlString: $0.absoluteString)
+                ReaderPageModel(id: $0.offset, urlString: $0.element.absoluteString)
             }
             isOffline = true
             errorMessage = nil
