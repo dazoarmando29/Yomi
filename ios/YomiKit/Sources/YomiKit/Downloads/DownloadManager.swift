@@ -347,8 +347,9 @@ public actor DownloadManager {
         var total: Int64 = 0
         for file in files {
             let path = downloadsDirectory.appendingPathComponent(file).path
-            let attributes = try? FileManager.default.attributesOfItem(atPath: path)
-            total += (attributes?[.size] as? Int64) ?? 0
+            guard let attributes = try? FileManager.default.attributesOfItem(atPath: path),
+                  (attributes[.type] as? FileAttributeType) == .typeRegular else { continue }
+            total += (attributes[.size] as? Int64) ?? 0
         }
         return total
     }

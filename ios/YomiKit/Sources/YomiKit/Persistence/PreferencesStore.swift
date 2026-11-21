@@ -82,13 +82,19 @@ public actor PreferencesStore {
 
         let positionsURL = directory.appendingPathComponent(Self.positionsFileName)
         if let data = try? Data(contentsOf: positionsURL),
-           let decoded = try? JSONDecoder().decode([String: ReaderPosition].self, from: data) {
+           let decoded = try? Self.decodePositions(from: data) {
             for (key, value) in decoded {
                 if let id = Int64(key) {
                     positions[id] = value
                 }
             }
         }
+    }
+
+    private static func decodePositions(from data: Data) throws -> [String: ReaderPosition] {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode([String: ReaderPosition].self, from: data)
     }
 
     public func update(_ transform: (inout AppPreferences) -> Void) throws {
@@ -121,7 +127,7 @@ public actor PreferencesStore {
     public func loadPositionsFromDisk() throws {
         let positionsURL = directory.appendingPathComponent(Self.positionsFileName)
         guard let data = try? Data(contentsOf: positionsURL),
-              let decoded = try? JSONDecoder().decode([String: ReaderPosition].self, from: data) else { return }
+              let decoded = try? Self.decodePositions(from: data) else { return }
         positions = [:]
         for (key, value) in decoded {
             if let id = Int64(key) {

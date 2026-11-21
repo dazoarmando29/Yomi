@@ -73,11 +73,8 @@ final class ProtobufTests: XCTestCase {
     }
 
     func testPackedVarintListDecoding() throws {
-        // Packed encoding of [1, 2, 300] as field 17
-        var packed = Data()
-        packed.append(0x08); packed.append(0x01)
-        packed.append(0x08); packed.append(0x02)
-        packed.append(0x08); packed.append(0xac); packed.append(0x02)
+        // Packed encoding of [1, 2, 300] as field 17: raw varints, no tags
+        let packed = Data([0x01, 0x02, 0xAC, 0x02])
         var writer = ProtobufWriter()
         writer.writeBytesField(17, packed)
 

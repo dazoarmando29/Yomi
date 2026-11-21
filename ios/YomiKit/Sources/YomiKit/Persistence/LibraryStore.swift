@@ -79,7 +79,9 @@ public actor LibraryStore {
         let snapshotURL = directory.appendingPathComponent(Self.snapshotFileName)
         if FileManager.default.fileExists(atPath: snapshotURL.path) {
             let data = try Data(contentsOf: snapshotURL)
-            self.state = try JSONDecoder().decode(LibrarySnapshot.self, from: data)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            self.state = try decoder.decode(LibrarySnapshot.self, from: data)
         } else {
             self.state = LibrarySnapshot()
         }
@@ -171,6 +173,8 @@ public actor LibraryStore {
     }
 
     /// Marks a manga as favorite/in-library (or removes the flag without deleting data).
+    /// Writes through directly: unlike `upsertManga`, this must be able to clear
+    /// `favoriteAt` even when a stored record exists.
     public func setFavorite(id: Int64, favorite: Bool) throws {
         guard var manga = mangaByID[id] else { return }
         if favorite {
@@ -179,7 +183,11 @@ public actor LibraryStore {
         } else {
             manga.favoriteAt = nil
         }
-        try upsertManga(manga)
+        if let index = state.mangas.firstIndex(where: { $0.id == id }) {
+            state.mangas[index] = manga
+        }
+        mangaByID[id] = manga
+        try persistIfNeeded()
     }
 
     /// Fully removes a manga and its chapters/history/category links.

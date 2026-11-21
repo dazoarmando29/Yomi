@@ -51,11 +51,32 @@ Test files (XCTest, runnable on Windows/macOS/Linux):
 
 ### Results
 
-(TO BE FILLED — local run in progress)
+#### Local (Windows)
 
 ```
 swift test --package-path ios/YomiKit   (Swift 6.4.3, Windows)
 ```
+
+**Status: not completed locally.** The Windows toolchain (modular
+`Platforms`/`Runtimes` layout) fails while building the SDK's clang modules
+(`SwiftShims`/`CDispatch` module maps can't resolve MSVC headers in SwiftPM's
+module-validation path), before any project code is reached. A plain `swiftc`
+compile of a trivial file succeeds with the same environment, so this is a
+toolchain/SwiftPM interaction issue on Windows, not a code issue. Full output is
+reproducible with the commands in `IOS_BUILD_GUIDE.md` §6.
+
+#### macOS CI (authoritative)
+
+Workflow `ios-ci.yml`, run on `macos-15` with `swift test --package-path ios/YomiKit`
+and `set -o pipefail` (failures are not masked).
+
+| CI run | Commit | Result |
+|---|---|---|
+| 44916724151 | e8d58db8f | ❌ `swift test` step reported ✗ hidden by `tee` (workflow bug fixed); real result: compile errors (7 found) |
+| 44917306921 | 79d3e372d | ❌ 1 remaining compile error (`missing try` in `ReaderLogicTests`) — fixed in c187d361d |
+| current | c187d361d | see below |
+
+(Final counts updated below once the run completes.)
 
 ## 4. Not verified on this host (explicitly)
 

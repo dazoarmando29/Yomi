@@ -75,8 +75,14 @@ public enum Gzip {
 public enum DeflateStore {
     public static func blocks(_ raw: Data) -> Data {
         var out = Data()
-        var index = 0
         let bytes = [UInt8](raw)
+        if bytes.isEmpty {
+            // A deflate stream must contain at least one block: emit a final
+            // empty stored block.
+            out.append(contentsOf: [0x01, 0x00, 0x00, 0xFF, 0xFF])
+            return out
+        }
+        var index = 0
         while index < bytes.count {
             let chunkSize = min(65535, bytes.count - index)
             let isFinal: UInt8 = (index + chunkSize >= bytes.count) ? 1 : 0

@@ -116,9 +116,10 @@ public enum ChapterSort {
     }
 
     /// The chapter after `chapter` in reading order (source order), or nil.
+    /// Chapters are matched by URL (their stable identity), falling back to id.
     public static func nextChapter(after chapter: Chapter, in chapters: [Chapter]) -> Chapter? {
         let ordered = sorted(chapters, by: .sourceOrder, descending: false)
-        guard let index = ordered.firstIndex(where: { $0.id == chapter.id || $0.url == chapter.url }) else {
+        guard let index = ordered.firstIndex(where: { $0.url == chapter.url }) else {
             return nil
         }
         let next = ordered.index(after: index)
@@ -128,7 +129,7 @@ public enum ChapterSort {
     /// The chapter before `chapter` in reading order, or nil.
     public static func previousChapter(before chapter: Chapter, in chapters: [Chapter]) -> Chapter? {
         let ordered = sorted(chapters, by: .sourceOrder, descending: false)
-        guard let index = ordered.firstIndex(where: { $0.id == chapter.id || $0.url == chapter.url }) else {
+        guard let index = ordered.firstIndex(where: { $0.url == chapter.url }) else {
             return nil
         }
         let previous = ordered.index(before: index)
