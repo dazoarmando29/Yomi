@@ -34,6 +34,12 @@ anything not verified is explicitly marked as such.
 | 6 | YomiKit unit test suite (XCTest) | `swift test --package-path ios/YomiKit` on macOS CI | ✅ **Executed 81 tests, 0 failures** (see §3) |
 | 7 | iOS Simulator build (unsigned) | `xcodebuild ... -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build` on macOS CI | ✅ **BUILD SUCCEEDED** — the full SwiftUI app compiles against the iOS SDK |
 | 8 | Android pipeline on this branch | `gradlew :app:testDebugUnitTest :app:assembleDebug` | ✅ **BUILD SUCCESSFUL** (1m41s; no Android sources modified) |
+| 9 | Unsigned device IPA pipeline (manual dispatch) | `xcodebuild -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO` + `verify_ipa.py` gates + Payload packaging | ✅ Run 44922511419: built `Release-iphoneos/Yomi.app`, verified, packaged **`Yomi-unsigned.ipa`** (4.77 MB) |
+| 10 | Independent local verification of the downloaded IPA | `python ios/tools/verify_ipa.py Yomi-unsigned.ipa` (Windows) | ✅ **ALL CHECKS PASSED** — arm64 Mach-O, `LC_BUILD_VERSION` platform = iOS device (2, not simulator 7), min iOS 17.0, `CFBundleIdentifier` = `app.yomi.reader`, `Payload/Yomi.app` structure, no embedded frameworks (YomiKit statically linked), no entitlements |
+
+Artifact location: GitHub Actions run 44922511419 → `Yomi-unsigned-ipa`
+(local copy: `C:\Users\Dazzo\Downloads\yomi-ipa\Yomi-unsigned.ipa`).
+Signing + installation steps: `IOS_BUILD_GUIDE.md` §5 (Sideloadly / AltStore free path).
 
 ## 3. YomiKit unit test suite (`swift test`)
 
