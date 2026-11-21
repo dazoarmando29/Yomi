@@ -19,6 +19,14 @@ struct YomiApp: App {
 /// the app's Application Support directory.
 @MainActor
 final class AppEnvironment: ObservableObject {
+    struct Services {
+        let library: LibraryStore
+        let preferences: PreferencesStore
+        let registry: SourceRegistry
+        let pipeline: ImagePipeline
+        let downloads: DownloadManager
+    }
+
     let baseDirectory: URL
     let library: LibraryStore
     let preferences: PreferencesStore
@@ -32,32 +40,63 @@ final class AppEnvironment: ObservableObject {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
         let base = support.appendingPathComponent("Yomi", isDirectory: true)
+        self.baseDirectory = base
 
         // Bootstrap is synchronous and small (a few JSON files); failures fall
         // back to in-memory stores with a visible error instead of crashing.
+        let (services, error) = Self.makeServices(base: base)
+        let resolved = services ?? Self.makeFallbackServices()
+        self.library = resolved.library
+        self.preferences = resolved.preferences
+        self.registry = resolved.registry
+        self.pipeline = resolved.pipeline
+        self.downloads = resolved.downloads
+        self.startupError = error
+    }
+
+    private static func makeServices(base: URL) -> (Services?, String?) {
         do {
             try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
-            self.baseDirectory = base
-            self.library = try LibraryStore(directory: base)
-            self.preferences = try PreferencesStore(directory: base)
-            self.registry = SourceRegistry(providers: [SampleSource()])
-            self.pipeline = ImagePipeline(
+            let library = try LibraryStore(directory: base)
+            let preferences = try PreferencesStore(directory: base)
+            let registry = SourceRegistry(providers: [SampleSource()])
+            let pipeline = ImagePipeline(
                 directory: base.appendingPathComponent("image-cache", isDirectory: true)
             )
-            self.downloads = try DownloadManager(baseDirectory: base, library: library, registry: registry)
+            let downloads = try DownloadManager(baseDirectory: base, library: library, registry: registry)
+            return (
+                Services(
+                    library: library,
+                    preferences: preferences,
+                    registry: registry,
+                    pipeline: pipeline,
+                    downloads: downloads
+                ),
+                nil
+            )
         } catch {
-            self.startupError = "Storage init failed: \(error.localizedDescription). Using temporary storage."
-            self.baseDirectory = base
-            self.library = (try? LibraryStore.inMemory())!
-            self.preferences = (try? PreferencesStore(directory: FileManager.default.temporaryDirectory))!
-            self.registry = SourceRegistry(providers: [SampleSource()])
-            self.pipeline = ImagePipeline(directory: FileManager.default.temporaryDirectory)
-            self.downloads = (try? DownloadManager(
-                baseDirectory: FileManager.default.temporaryDirectory,
-                library: library,
-                registry: registry
-            ))!
+            return (nil, "Storage init failed: \(error.localizedDescription). Using temporary storage.")
         }
+    }
+
+    private static func makeFallbackServices() -> Services {
+        let temporary = FileManager.default.temporaryDirectory
+        let library = (try? LibraryStore.inMemory())!
+        let preferences = (try? PreferencesStore(directory: temporary))!
+        let registry = SourceRegistry(providers: [SampleSource()])
+        let pipeline = ImagePipeline(directory: temporary)
+        let downloads = (try? DownloadManager(
+            baseDirectory: temporary,
+            library: library,
+            registry: registry
+        ))!
+        return Services(
+            library: library,
+            preferences: preferences,
+            registry: registry,
+            pipeline: pipeline,
+            downloads: downloads
+        )
     }
 
     /// Source names for backup export/reporting.
