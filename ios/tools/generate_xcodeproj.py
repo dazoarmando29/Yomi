@@ -459,8 +459,7 @@ def verify(document: str) -> list[str]:
 def scheme_document() -> str:
     target_id = object_id("target", "Yomi")
     reference = (
-        'BuildableReference\n'
-        '               BuildableIdentifier="primary"\n'
+        'BuildableIdentifier="primary"\n'
         f'               BlueprintIdentifier="{target_id}"\n'
         '               BuildableName="Yomi.app"\n'
         '               BlueprintName="Yomi"\n'

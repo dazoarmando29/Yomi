@@ -30,57 +30,71 @@ public enum BackupExporter {
         )
 
         backup.mangas = snapshot.mangas.map { manga in
-            let backupChapters = (chaptersByManga[manga.id] ?? []).map { chapter in
-                YomiBackupChapter(
-                    url: chapter.url,
-                    name: chapter.name,
-                    scanlator: chapter.scanlator,
-                    read: chapter.read,
-                    bookmark: chapter.bookmark,
-                    lastPageRead: Int64(chapter.lastPageRead),
-                    dateFetch: Int64(chapter.dateFetch.timeIntervalSince1970 * 1000),
-                    dateUpload: Int64((chapter.dateUpload ?? Date(timeIntervalSince1970: 0)).timeIntervalSince1970 * 1000),
-                    chapterNumber: Float(chapter.chapterNumber),
-                    sourceOrder: chapter.sourceOrder
-                )
-            }
-            let backupHistory = (historyByManga[manga.id] ?? []).compactMap { history -> YomiBackupHistory? in
-                guard let chapterURL = chapterURLByID[history.chapterID] else { return nil }
-                return YomiBackupHistory(
-                    url: chapterURL,
-                    lastRead: Int64(history.readAt.timeIntervalSince1970 * 1000),
-                    readDuration: history.readDuration
-                )
-            }
-            return YomiBackupManga(
-                source: manga.sourceID.rawValue,
-                url: manga.url,
-                title: manga.title,
-                artist: manga.artist,
-                author: manga.author,
-                mangaDescription: manga.mangaDescription,
-                genres: manga.genres,
-                status: manga.status.rawValue,
-                thumbnailURL: manga.thumbnailURL,
-                dateAdded: Int64((manga.dateAdded ?? manga.favoriteAt ?? Date()).timeIntervalSince1970 * 1000),
-                viewer: 0,
-                chapters: backupChapters,
-                categories: snapshot.mangaCategoryLinks
+            makeBackupManga(
+                manga: manga,
+                chapters: chaptersByManga[manga.id] ?? [],
+                history: historyByManga[manga.id] ?? [],
+                chapterURLByID: chapterURLByID,
+                categoryIDs: snapshot.mangaCategoryLinks
                     .filter { $0.mangaID == manga.id }
-                    .map(\.categoryID),
-                tracking: [],
-                favorite: manga.isInLibrary,
-                chapterFlags: Int(manga.chapterFlags),
-                viewerFlags: Int(manga.viewerFlags),
-                history: backupHistory,
-                updateStrategy: manga.updateStrategy.rawValue,
-                favoriteModifiedAt: manga.favoriteAt.map { Int64($0.timeIntervalSince1970) },
-                excludedScanlators: [],
-                notes: manga.notes,
-                initialized: manga.initialized
+                    .map(\.categoryID)
             )
         }
         return backup
+    }
+
+    private static func makeBackupManga(
+        manga: Manga,
+        chapters: [Chapter],
+        history: [History],
+        chapterURLByID: [Int64: String],
+        categoryIDs: [Int64]
+    ) -> YomiBackupManga {
+        var entry = YomiBackupManga(
+            source: manga.sourceID.rawValue,
+            url: manga.url,
+            title: manga.title
+        )
+        entry.artist = manga.artist
+        entry.author = manga.author
+        entry.mangaDescription = manga.mangaDescription
+        entry.genres = manga.genres
+        entry.status = manga.status.rawValue
+        entry.thumbnailURL = manga.thumbnailURL
+        entry.dateAdded = Int64((manga.dateAdded ?? manga.favoriteAt ?? Date()).timeIntervalSince1970 * 1000)
+        entry.viewer = 0
+        entry.chapters = chapters.map { chapter in
+            let uploadMillis = Int64((chapter.dateUpload ?? Date(timeIntervalSince1970: 0)).timeIntervalSince1970 * 1000)
+            var backupChapter = YomiBackupChapter(url: chapter.url, name: chapter.name)
+            backupChapter.scanlator = chapter.scanlator
+            backupChapter.read = chapter.read
+            backupChapter.bookmark = chapter.bookmark
+            backupChapter.lastPageRead = Int64(chapter.lastPageRead)
+            backupChapter.dateFetch = Int64(chapter.dateFetch.timeIntervalSince1970 * 1000)
+            backupChapter.dateUpload = uploadMillis
+            backupChapter.chapterNumber = Float(chapter.chapterNumber)
+            backupChapter.sourceOrder = chapter.sourceOrder
+            return backupChapter
+        }
+        entry.categories = categoryIDs
+        entry.tracking = []
+        entry.favorite = manga.isInLibrary
+        entry.chapterFlags = Int(manga.chapterFlags)
+        entry.viewerFlags = Int(manga.viewerFlags)
+        entry.history = history.compactMap { item in
+            guard let chapterURL = chapterURLByID[item.chapterID] else { return nil }
+            return YomiBackupHistory(
+                url: chapterURL,
+                lastRead: Int64(item.readAt.timeIntervalSince1970 * 1000),
+                readDuration: item.readDuration
+            )
+        }
+        entry.updateStrategy = manga.updateStrategy.rawValue
+        entry.favoriteModifiedAt = manga.favoriteAt.map { Int64($0.timeIntervalSince1970) }
+        entry.excludedScanlators = []
+        entry.notes = manga.notes
+        entry.initialized = manga.initialized
+        return entry
     }
 
     /// Encodes the backup as gzipped protobuf (the `.proto.gz` interchange format).

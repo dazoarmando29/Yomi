@@ -22,7 +22,7 @@ final class BackupViewModel: ObservableObject {
             defer { if accessing { url.stopAccessingSecurityScopedResource() } }
             let data = try Data(contentsOf: url)
 
-            let knownSources = await environment.registry.all.map(\.id)
+            let knownSources = await environment.registry.all.map { $0.id }
             let prepared = try await BackupImporter.prepare(
                 data: data,
                 knownSources: knownSources,

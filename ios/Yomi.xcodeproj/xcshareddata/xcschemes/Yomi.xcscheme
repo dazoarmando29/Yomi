@@ -13,7 +13,6 @@
             buildForArchiving = "YES"
             buildForAnalyzing = "YES">
             <BuildableReference
-               BuildableReference
                BuildableIdentifier="primary"
                BlueprintIdentifier="CB736C4B244192C9C7382552"
                BuildableName="Yomi.app"
@@ -44,8 +43,7 @@
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
-            BuildableReference
-               BuildableIdentifier="primary"
+            BuildableIdentifier="primary"
                BlueprintIdentifier="CB736C4B244192C9C7382552"
                BuildableName="Yomi.app"
                BlueprintName="Yomi"
@@ -62,8 +60,7 @@
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
-            BuildableReference
-               BuildableIdentifier="primary"
+            BuildableIdentifier="primary"
                BlueprintIdentifier="CB736C4B244192C9C7382552"
                BuildableName="Yomi.app"
                BlueprintName="Yomi"

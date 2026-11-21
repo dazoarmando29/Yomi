@@ -42,7 +42,8 @@ public enum Gzip {
         guard index <= bytes.count else { throw GzipError.truncated }
 
         var inflater = Inflater(bytes: Array(bytes[index...]))
-        let inflated = try inflater.inflateAll()
+        let inflatedBytes = try inflater.inflateAll()
+        let inflated = Data(inflatedBytes)
 
         // Trailer: CRC32 + ISIZE
         let consumed = index + inflater.consumedBytes
@@ -268,7 +269,7 @@ struct Inflater {
     }
 
     static func fixedDistanceTable() throws -> HuffmanDecoder {
-        HuffmanDecoder(lengths: [Int](repeating: 5, count: 32))
+        try HuffmanDecoder(lengths: [Int](repeating: 5, count: 32))
     }
 }
 

@@ -140,7 +140,7 @@ public struct YomiBackupHistory: Sendable, Equatable {
     public var lastRead: Int64
     public var readDuration: Int64
 
-    public init(url: String, lastRead: Int64, readDuration: Int64 = 0) {
+    public init(url: String, lastRead: Int64 = 0, readDuration: Int64 = 0) {
         self.url = url
         self.lastRead = lastRead
         self.readDuration = readDuration

@@ -5,12 +5,19 @@ import YomiKit
 
 @MainActor
 final class BrowseViewModel: ObservableObject {
-    @Published var sources: [SourceProvider] = []
+    struct SourceEntry: Identifiable {
+        let id: SourceID
+        let name: String
+        let lang: String
+    }
+
+    @Published var sources: [SourceEntry] = []
     @Published var isLoading = false
 
     func load(environment: AppEnvironment) async {
         isLoading = true
-        sources = await environment.registry.all
+        let providers = await environment.registry.all
+        sources = providers.map { SourceEntry(id: $0.id, name: $0.name, lang: $0.lang) }
         isLoading = false
     }
 }
@@ -23,7 +30,7 @@ struct BrowseView: View {
         NavigationStack {
             List {
                 Section {
-                    ForEach(viewModel.sources, id: \.id) { source in
+                    ForEach(viewModel.sources) { source in
                         NavigationLink(value: source.id) {
                             HStack(spacing: 12) {
                                 Image(systemName: "globe")

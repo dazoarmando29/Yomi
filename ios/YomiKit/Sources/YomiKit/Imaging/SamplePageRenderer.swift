@@ -10,12 +10,12 @@ public enum SamplePageRenderer {
         let path = urlString.dropFirst("sample://".count)
 
         if path.hasPrefix("cover/") {
-            let key = String(path.dropFirst("cover/")).replacingOccurrences(of: ".png", with: "")
+            let key = String(path.dropFirst("cover/".count)).replacingOccurrences(of: ".png", with: "")
             return renderPage(seedKey: "cover/\(key)", pageIndex: 0, width: width, height: height, isCover: true)
         }
 
         if path.hasPrefix("page/") {
-            let parts = String(path.dropFirst("page/"))
+            let parts = String(path.dropFirst("page/".count))
                 .replacingOccurrences(of: ".png", with: "")
                 .split(separator: "/")
             guard parts.count == 3,

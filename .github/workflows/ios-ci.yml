@@ -27,7 +27,9 @@ jobs:
       - name: Show Swift version
         run: swift --version
       - name: Run YomiKit test suite
-        run: swift test --package-path ios/YomiKit 2>&1 | tee ios-test-output.log
+        run: |
+          set -o pipefail
+          swift test --package-path ios/YomiKit 2>&1 | tee ios-test-output.log
       - name: Upload test log
         if: always()
         uses: actions/upload-artifact@v4
