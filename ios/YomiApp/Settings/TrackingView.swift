@@ -5,11 +5,18 @@ import SwiftUI
 /// credentials (never committed, never requested in-app without a configured
 /// client id). Until then trackers stay honestly "not configured".
 struct TrackingView: View {
-    private let trackers: [(name: String, detail: String, status: Status)] = [
-        ("MyAnimeList", "OAuth 2.0 authorization code + PKCE", .needsConfiguration),
-        ("AniList", "OAuth 2.0 authorization code + PKCE", .needsConfiguration),
-        ("Kitsu", "Email + password OAuth", .planned),
-        ("Shikimori", "OAuth 2.0", .planned),
+    struct TrackerEntry: Identifiable {
+        let name: String
+        let detail: String
+        let status: Status
+        var id: String { name }
+    }
+
+    private let trackers: [TrackerEntry] = [
+        TrackerEntry(name: "MyAnimeList", detail: "OAuth 2.0 authorization code + PKCE", status: .needsConfiguration),
+        TrackerEntry(name: "AniList", detail: "OAuth 2.0 authorization code + PKCE", status: .needsConfiguration),
+        TrackerEntry(name: "Kitsu", detail: "Email + password OAuth", status: .planned),
+        TrackerEntry(name: "Shikimori", detail: "OAuth 2.0", status: .planned),
     ]
 
     enum Status {
@@ -21,7 +28,7 @@ struct TrackingView: View {
     var body: some View {
         List {
             Section {
-                ForEach(trackers, id: \.name) { tracker in
+                ForEach(trackers) { tracker in
                     HStack {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(tracker.name)

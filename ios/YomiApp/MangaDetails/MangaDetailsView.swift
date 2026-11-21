@@ -194,8 +194,8 @@ struct MangaDetailsView: View {
             .tint(viewModel.isInLibrary ? YomiTheme.primaryContainer : YomiTheme.primary)
             .foregroundStyle(viewModel.isInLibrary ? YomiTheme.onPrimary : YomiTheme.onPrimary)
 
-            if let firstUnread = viewModel.chapters.first(where: { !$0.read }) {
-                NavigationLink(value: ReaderRoute(manga: viewModel.manga!, chapter: firstUnread)) {
+            if let manga = viewModel.manga, let firstUnread = viewModel.chapters.first(where: { !$0.read }) {
+                NavigationLink(value: ReaderRoute(manga: manga, chapter: firstUnread)) {
                     Label("Read", systemImage: "book.fill")
                         .frame(maxWidth: .infinity)
                 }

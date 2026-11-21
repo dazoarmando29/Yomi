@@ -138,7 +138,7 @@ final class ReaderLogicTests: XCTestCase {
             try await prefs.savePosition(position)
         }
         let reopened = try PreferencesStore(directory: dir)
-        await reopened.loadPositionsFromDisk()
+        try await reopened.loadPositionsFromDisk()
         let loaded = await reopened.position(chapterID: 2)
         XCTAssertEqual(loaded?.pageIndex, 5)
         XCTAssertEqual(loaded?.pageCount, 20)
