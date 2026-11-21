@@ -85,7 +85,11 @@ public actor LibraryStore {
         } else {
             self.state = LibrarySnapshot()
         }
-        rebuildIndices()
+        let indices = Self.buildIndices(from: state)
+        self.mangaByID = indices.mangaByID
+        self.mangaByRemoteKey = indices.mangaByRemoteKey
+        self.chaptersByManga = indices.chaptersByManga
+        self.chapterByID = indices.chapterByID
     }
 
     /// Store that never touches disk (unit tests).
@@ -96,22 +100,35 @@ public actor LibraryStore {
         return store
     }
 
-    private func rebuildIndices() {
-        mangaByID = [:]
-        mangaByRemoteKey = [:]
-        chaptersByManga = [:]
-        chapterByID = [:]
+    private struct Indices {
+        var mangaByID: [Int64: Manga] = [:]
+        var mangaByRemoteKey: [String: Int64] = [:]
+        var chaptersByManga: [Int64: [Chapter]] = [:]
+        var chapterByID: [Int64: Chapter] = [:]
+    }
+
+    private static func buildIndices(from state: LibrarySnapshot) -> Indices {
+        var indices = Indices()
         for manga in state.mangas {
-            mangaByID[manga.id] = manga
-            mangaByRemoteKey[Self.remoteKey(sourceID: manga.sourceID, url: manga.url)] = manga.id
+            indices.mangaByID[manga.id] = manga
+            indices.mangaByRemoteKey[remoteKey(sourceID: manga.sourceID, url: manga.url)] = manga.id
         }
         for chapter in state.chapters {
-            chapterByID[chapter.id] = chapter
-            chaptersByManga[chapter.mangaID, default: []].append(chapter)
+            indices.chapterByID[chapter.id] = chapter
+            indices.chaptersByManga[chapter.mangaID, default: []].append(chapter)
         }
-        for key in chaptersByManga.keys {
-            chaptersByManga[key]?.sort { $0.sourceOrder < $1.sourceOrder }
+        for key in indices.chaptersByManga.keys {
+            indices.chaptersByManga[key]?.sort { $0.sourceOrder < $1.sourceOrder }
         }
+        return indices
+    }
+
+    private func rebuildIndices() {
+        let indices = Self.buildIndices(from: state)
+        mangaByID = indices.mangaByID
+        mangaByRemoteKey = indices.mangaByRemoteKey
+        chaptersByManga = indices.chaptersByManga
+        chapterByID = indices.chapterByID
     }
 
     private static func remoteKey(sourceID: SourceID, url: String) -> String {
