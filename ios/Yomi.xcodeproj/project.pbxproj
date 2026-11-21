@@ -65,6 +65,7 @@
 		2FF2989549825C3F72487FE3 /* YomiApp */ = {
 			isa = PBXGroup;
 			children = (
+				FAD459828842A4D3A7835996 /* YomiApp.swift */,
 				5A6AB5080A9F00145806AF32 /* Theme */,
 				021AD52ECEAB226F863B8C24 /* Library */,
 				6A24CC378508A24A3645A397 /* Browse */,

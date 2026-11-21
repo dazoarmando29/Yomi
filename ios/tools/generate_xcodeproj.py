@@ -132,10 +132,11 @@ class ProjectBuilder:
         def children_for(group: str) -> str:
             entries = []
             for g, name in self.swift_files:
-                if g == group:
+                # Top-level files (g == "") live directly in the YomiApp group
+                if g == group or (group == "YomiApp" and g == ""):
                     entries.append((name, self.file_ref(g, name)))
             for g, name in self.resource_files:
-                if g == group:
+                if g == group or (group == "YomiApp" and g == ""):
                     entries.append((name, self.file_ref(g, name)))
             if group == "YomiApp":
                 for sub in APP_GROUP_DIRS + RESOURCE_DIRS:
@@ -447,6 +448,22 @@ def verify(document: str) -> list[str]:
     missing = referenced - defined
     if missing:
         problems.append(f"referenced but undefined object ids: {sorted(missing)[:5]}")
+
+    # Every file reference must appear in exactly one group's children list,
+    # otherwise Xcode resolves its path relative to the project root.
+    grouped = set()
+    for block in re.finditer(r"children = \((.*?)\);", document, re.DOTALL):
+        grouped.update(re.findall(r"\b([0-9A-F]{24})\b", block.group(1)))
+    file_refs = set(
+        re.findall(
+            r"^\t\t([0-9A-F]{24}) /\* .*? \*/ = \{isa = PBXFileReference;",
+            document,
+            re.MULTILINE,
+        )
+    )
+    ungrouped = file_refs - grouped
+    if ungrouped:
+        problems.append(f"file references not in any group: {sorted(ungrouped)[:5]}")
 
     for required in ("PBXNativeTarget", "PBXProject", "PBXSourcesBuildPhase",
                      "PBXResourcesBuildPhase", "XCConfigurationList",
